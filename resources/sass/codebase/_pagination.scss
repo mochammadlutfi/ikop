@@ -1,0 +1,79 @@
+//
+// Pagination
+// --------------------------------------------------
+
+.page-link {
+    font-weight: 600;
+
+    &:focus {
+        color: $body-color-dark;
+        background-color: $body-bg-dark;
+        border-color: $body-bg-dark;
+    }
+}
+
+.pagination-sm .page-link {
+    font-size: 1rem;
+    line-height: 16px;
+}
+
+.pagination-lg .page-link {
+    font-size: 1.142857rem;
+    line-height: 20px;
+}
+
+.page-link {
+    position: relative;
+    display: block;
+    padding: $pagination-padding-y $pagination-padding-x;
+    margin-left: -$pagination-border-width;
+    line-height: $pagination-line-height;
+    color: $pagination-color;
+    background-color: $pagination-bg;
+    border: $pagination-border-width solid $pagination-border-color;
+
+    &:hover {
+        z-index: 2;
+        color: $pagination-hover-color;
+        text-decoration: none;
+        background-color: $pagination-hover-bg;
+        border-color: $pagination-hover-border-color;
+    }
+
+    &:focus {
+        z-index: 3;
+        outline: $pagination-focus-outline;
+        box-shadow: $pagination-focus-box-shadow;
+    }
+}
+
+.page-item {
+    &:first-child {
+        .page-link {
+            margin-left: 0;
+            @include border-left-radius($border-radius);
+        }
+    }
+
+    &:last-child {
+        .page-link {
+            @include border-right-radius($border-radius);
+        }
+    }
+
+    &.active .page-link {
+        z-index: 3;
+        color: $pagination-active-color;
+        background-color: $pagination-active-bg;
+        border-color: $pagination-active-border-color;
+    }
+
+    &.disabled .page-link {
+        color: $pagination-disabled-color;
+        pointer-events: auto;
+        // Opinionated: remove the "hand" cursor set previously for .page-link
+        cursor: no-drop;
+        background-color: $pagination-bg;
+        border: $pagination-border-width solid $pagination-border-color;
+    }
+}

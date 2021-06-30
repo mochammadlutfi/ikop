@@ -1,0 +1,13 @@
+{
+    "name": "Cabang",
+    "alias": "cabang",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Cabang\\Providers\\CabangServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

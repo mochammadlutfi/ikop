@@ -1,0 +1,13 @@
+{
+    "name": "Pembiayaan",
+    "alias": "pembiayaan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Pembiayaan\\Providers\\PembiayaanServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

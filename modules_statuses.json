@@ -1,0 +1,14 @@
+{
+    "Anggota": true,
+    "Auth": true,
+    "Dashboard": true,
+    "Simpanan": true,
+    "Cabang": true,
+    "Wilayah": true,
+    "Keuangan": true,
+    "Laporan": true,
+    "Pembiayaan": true,
+    "Pengurus": true,
+    "Pengguna": true,
+    "MobileKoperasi": true
+}

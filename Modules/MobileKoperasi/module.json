@@ -1,0 +1,13 @@
+{
+    "name": "MobileKoperasi",
+    "alias": "mobilekoperasi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\MobileKoperasi\\Providers\\MobileKoperasiServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

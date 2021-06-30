@@ -1,0 +1,15 @@
+{
+    "name": "Simpanan",
+    "alias": "simpanan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Simpanan\\Providers\\SimpananServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "Helpers\\SimkopHelp.php"
+    ],
+    "requires": []
+}

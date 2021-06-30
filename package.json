@@ -1,0 +1,47 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "@types/lozad": "^1.9.0",
+        "@types/select2": "^4.0.53",
+        "axios": "^0.21.1",
+        "bootstrap": "^4.0.0",
+        "browser-sync": "^2.26.14",
+        "browser-sync-webpack-plugin": "^2.0.1",
+        "cross-env": "^5.1",
+        "jquery": "^3.2",
+        "laravel-mix": "^6.0.19",
+        "lodash": "^4.17.5",
+        "popper.js": "^1.15.0",
+        "postcss": "^8.3.0",
+        "resolve-url-loader": "^3.1.2",
+        "sass": "^1.22.12",
+        "sass-loader": "^7.3.1",
+        "vue": "^2.6.10",
+        "vue-template-compiler": "^2.6.10"
+    },
+    "dependencies": {
+        "@ttskch/select2-bootstrap4-theme": "^1.5.2",
+        "autonumeric": "^4.6.0",
+        "datatables": "^1.10.18",
+        "jquery-countto": "^1.2.0",
+        "jquery-maskmoney": "^3.0.2",
+        "jquery-scroll-lock": "^3.1.3",
+        "jquery.appear": "^1.0.1",
+        "js-cookie": "^2.2.0",
+        "lozad": "^1.16.0",
+        "print-js": "^1.6.0",
+        "select2": "^4.1.0-rc.0",
+        "sharer.js": "^0.4.1",
+        "simplebar": "^2.6.1",
+        "sweetalert2": "^10.16.0"
+    }
+}

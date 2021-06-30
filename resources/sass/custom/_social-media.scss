@@ -1,0 +1,57 @@
+/* Solid Social Share Buttons */
+/* Fluid Styles */
+.btn-social {
+	color: #ffffff;
+	text-decoration: none;
+	transition: opacity .15s ease-in-out;
+	&:visited {
+		color: #ffffff;
+		text-decoration: none;
+		transition: opacity .15s ease-in-out;
+	}
+	&:focus {
+		color: #ffffff;
+		text-decoration: none;
+		transition: opacity .15s ease-in-out;
+	}
+	&:hover {
+		color: #ffffff;
+		text-decoration: none;
+		transition: opacity .15s ease-in-out;
+		opacity: .75;
+	}
+	&:active {
+		color: #ffffff;
+		text-decoration: none;
+		transition: opacity .15s ease-in-out;
+		opacity: .75;
+	}
+}
+.btn-fb {
+	background-color: #3b5998;
+}
+.btn-tw {
+	background-color: #1da1f2;
+}
+.btn-in {
+	background-color: #0077b5;
+}
+.btn-wa {
+	background-color: #25d366;
+}
+.btn-line {
+	background-color: #00c300;
+}
+.btn-hn {
+	background-color: #ff4000;
+}
+.fluid {
+	display: flex;
+	a {
+		flex-grow: 1;
+		margin-right: 0.25rem;
+		&:last-child {
+			margin-right: 0rem;
+		}
+	}
+}

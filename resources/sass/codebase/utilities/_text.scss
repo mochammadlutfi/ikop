@@ -1,0 +1,303 @@
+//
+// Text
+// --------------------------------------------------
+
+// Font weight
+.font-w300 { font-weight: 300 !important; }
+.font-w400 { font-weight: 400 !important; }
+.font-w600 { font-weight: 600 !important; }
+.font-w700 { font-weight: 700 !important; }
+
+// Font sizes
+.font-size-default { font-size: $font-size-base  !important; }
+.font-size-xl { font-size: $font-size-xl !important; }
+.font-size-lg { font-size: $font-size-lg !important; }
+.font-size-md { font-size: $font-size-md !important; }
+.font-size-sm { font-size: $font-size-sm !important; }
+.font-size-xs { font-size: $font-size-xs !important; }
+
+// Line height
+.line-height-base { line-height: $line-height-base !important; }
+
+// Helpers
+.text-wrap-break-word { word-wrap: break-word; }
+.text-uppercase { letter-spacing: .05rem; }
+
+.text-back {
+    position: absolute;
+    top: -3rem;
+    right: 0;
+    font-size: 500%;
+    font-weight: 700;
+    opacity: .05;
+    z-index: 0;
+}
+
+.font-size-n5 {
+    font-size: 0.31237rem;
+  }
+  
+  .font-size-6 {
+    font-size: 0.37538rem;
+  }
+  
+  .font-size-8 {
+    font-size: 0.49962rem;
+  }
+  
+  .font-size-11 {
+    font-size: 0.602rem;
+  }
+  
+  .font-size-12 {
+    font-size: 0.74987rem;
+  }
+  
+  .font-size-13 {
+    font-size: 0.81288rem;
+  }
+  
+  .font-size-14 {
+    font-size: 0.875rem;
+  }
+  
+  .font-size-15, .nav-tab-pill .nav-link {
+    font-size: 0.938rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-sl-15 {
+      font-size: 0.938rem;
+    }
+  }
+  
+  .font-size-16 {
+    font-size: 1.00012rem;
+  }
+  
+  .font-size-17 {
+    font-size: 1.06225rem;
+  }
+  
+  .font-size-18 {
+    font-size: 1.12525rem;
+  }
+  
+  .font-size-20 {
+    font-size: 1.25038rem;
+  }
+  
+  .font-size-22 {
+    font-size: 1.37462rem;
+  }
+  
+  .font-size-24 {
+    font-size: 1.49975rem;
+  }
+  
+  .font-size-25 {
+    font-size: 1.56275rem;
+  }
+  
+  .font-size-26 {
+    font-size: 1.62488rem;
+  }
+  
+  @media (min-width: 1480px) {
+    .font-size-wd-25 {
+      font-size: 1.56275rem;
+    }
+  }
+  
+  .font-size-28 {
+    font-size: 1.75rem;
+  }
+  
+  .font-size-30 {
+    font-size: 1.87512rem;
+  }
+  
+  @media (min-width: 1200px) and (max-width: 1479.98px) {
+    .font-size-xl-30 {
+      font-size: 1.87512rem;
+    }
+  }
+  
+  .font-size-32 {
+    font-size: 2.00025rem;
+  }
+  
+  .font-size-34 {
+    font-size: 2.12538rem;
+  }
+  
+  .font-size-36 {
+    font-size: 2.24962rem;
+  }
+  
+  .font-size-40 {
+    font-size: 2.49988rem;
+  }
+  
+  .font-size-44 {
+    font-size: 2.75012rem;
+  }
+  
+  .font-size-46 {
+    font-size: 2.87525rem;
+  }
+  
+  @media (min-width: 992px) {
+    .font-size-sl-48 {
+      font-size: 2.625rem;
+    }
+  }
+  
+  @media (min-width: 1480px) {
+    .font-size-sl-48 {
+      font-size: 3.00038rem;
+    }
+  }
+  
+  .font-size-50 {
+    font-size: 1.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-50 {
+      font-size: 3.12462rem;
+    }
+  }
+  
+  .font-size-55 {
+    font-size: 1.4rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-55 {
+      font-size: 3.43788rem;
+    }
+  }
+  
+  .font-size-56 {
+    font-size: 3.5rem;
+  }
+  
+  .font-size-58 {
+    font-size: 3.62512rem;
+  }
+  
+  .font-size-58-sm {
+    font-size: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-58-sm {
+      font-size: 3.62512rem;
+    }
+  }
+  
+  .font-size-15-sm {
+    font-size: 0.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-15-sm {
+      font-size: 0.938rem;
+    }
+  }
+  
+  .font-size-64 {
+    font-size: 1.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    .font-size-64 {
+      font-size: 3.99962rem;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .font-size-sl-72 {
+      font-size: 3.2rem;
+    }
+  }
+  
+  @media (min-width: 1480px) {
+    .font-size-sl-72 {
+      font-size: 4.50012rem;
+    }
+  }
+  
+  .font-size-130 {
+    font-size: 8.12525rem;
+  }
+  
+  @media (max-width: 1199.98px) {
+    .font-size-14-down-lg {
+      font-size: 0.875rem;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .font-size-15-md {
+      font-size: 0.75rem;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 1199.98px) {
+    .font-size-14-lg {
+      font-size: 0.875rem;
+    }
+  
+    .font-size-30-lg {
+      font-size: 1.875rem;
+    }
+  
+    .font-size-24-lg {
+      font-size: 1.5rem;
+    }
+  
+    .font-size-20-lg {
+      font-size: 1.25rem;
+    }
+  
+    .shadow-lg {
+      box-shadow: rgba(49, 53, 59, 0.12) 0px 1px 6px 0px !important;
+    }
+  }
+
+// Contextual colors
+@include text-emphasis-variant('.text-primary-dark', $brand-dark);
+@include text-emphasis-variant('.text-primary-darker', $brand-darker);
+@include text-emphasis-variant('.text-primary-light', $brand-light);
+@include text-emphasis-variant('.text-primary-lighter', $brand-lighter);
+@include text-emphasis-variant('.text-body-bg', $body-bg);
+@include text-emphasis-variant('.text-body-bg-dark', $body-bg-dark);
+@include text-emphasis-variant('.text-body-bg-light', $body-bg-light);
+@include text-emphasis-variant('.text-body-color', $body-color);
+@include text-emphasis-variant('.text-body-color-dark', $body-color-dark);
+@include text-emphasis-variant('.text-body-color-light', $body-color-light);
+@include text-emphasis-variant('.text-muted', $gray-dark);
+@include text-emphasis-variant('.text-success-light', $brand-success-light);
+@include text-emphasis-variant('.text-warning-light', $brand-warning-light);
+@include text-emphasis-variant('.text-info-light', $brand-info-light);
+@include text-emphasis-variant('.text-danger-light', $brand-danger-light);
+@include text-emphasis-variant('.text-white', $white);
+@include text-emphasis-variant('.text-white-op', rgba(255,255,255,.8));
+@include text-emphasis-variant('.text-black', $black);
+@include text-emphasis-variant('.text-black-op', rgba(0,0,0,.5));
+@include text-emphasis-variant('.text-gray', $gray);
+@include text-emphasis-variant('.text-gray-dark', $gray-dark);
+@include text-emphasis-variant('.text-gray-darker', $gray-darker);
+@include text-emphasis-variant('.text-gray-light', $gray-light);
+@include text-emphasis-variant('.text-gray-lighter', $gray-lighter);
+
+// Contextual dual text colors (for inverse header/sidebar)
+@include text-emphasis-variant('.text-dual-primary-dark', $brand-dark);
+
+.page-header-inverse #page-header,
+.sidebar-inverse #sidebar {
+    @include text-emphasis-variant('.text-dual-primary-dark', $body-color-light);
+}
