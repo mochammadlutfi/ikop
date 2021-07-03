@@ -27,7 +27,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'secure_code'
+    ];
+
+    protected $appends = [
+        'is_secure'
     ];
 
     /**
@@ -44,8 +48,13 @@ class User extends Authenticatable
         return $this->belongsTo('Modules\Anggota\Entities\Anggota', 'anggota_id', 'anggota_id');
     }
 
-    // public function getNamaAttribute($value)
-    // {
-    //     return $this->anggota->nama;
-    // }
+    public function getNamaAttribute($value)
+    {
+        return $this->anggota->nama;
+    }
+
+    public function getIsSecureAttribute($value)
+    {
+        return $this->secure_code == null ? false : true;
+    }
 }

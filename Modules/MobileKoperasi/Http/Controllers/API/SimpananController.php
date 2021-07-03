@@ -2,9 +2,14 @@
 
 namespace Modules\MobileKoperasi\Http\Controllers\API;
 
+use Modules\Anggota\Entities\Anggota;
 use Modules\Simpanan\Entities\Wallet;
+use Modules\Simpanan\Entities\SimkopTransaksi;
 
 
+use Modules\Keuangan\Entities\Transaksi;
+use Modules\Keuangan\Entities\TransaksiKas;
+use Date;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,23 +21,14 @@ class SimpananController extends Controller
 
     
      /**
-     * Get Saldo Simla.
+     * Get List Simpanan.
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function getSimlaSaldo(Request $request)
+    public function index(Request $request)
     {
-        $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
-
-        return response()->json([
-            'data' => currency($wallet->sukarela),
-            'fail' => false,
-        ], 200);
-    }
-
-    public function getSimpanan(Request $request)
-    {
-        $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
+        $anggota_id = $request->user()->anggota_id;
+        $wallet = Wallet::where('anggota_id', $anggota_id)->first();
         $simpanan = collect([
             [
                 'program' => 'Simpanan Pokok',
@@ -62,80 +58,162 @@ class SimpananController extends Controller
     }
 
 
-
     /**
-     * Login the admin.
+     * Get Detail Simpanan.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function login(Request $request)
+    public function detail($slug,Request $request)
     {
-        
-        $input = $request->all();
+        $response = collect();
+        $anggota_id = $request->user()->anggota_id;
+        $wallet = Wallet::where('anggota_id', $anggota_id)->first();
 
-        $rules = [
-            'no_hp' => 'required',
-            'password' => 'required|string'
-        ];
+        if($request->slug == 'pokok'){
 
-        $pesan = [
-            'no_hp.required' => 'Alamat no_hp Wajib Diisi!',
-            'password.required' => 'Password Wajib Diisi!',
-        ];
-        $validator = Validator::make($request->all(), $rules, $pesan);
-        if ($validator->fails()){
-            return response()->json([
-                'fail' => true,
-                'msg' => 'Terdapat Kesalahan Di Form!',
-                'errors' => $validator->errors(),
-            ], 401);
-            
-            // $this->sendError('User not found', 401);
-        }else{
-            if(auth()->attempt($request->only('no_hp','password')))
+            $response = $response->merge([
+                'program' => 'Simpanan Pokok',
+                'saldo' => number_format($wallet->pokok,0,',','.'),
+                'slug' => 'pokok',
+            ]);
+            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
+            ->join('transaksi_kas', function($join)
             {
-                $data = auth()->user();
-                $data->save();
-                $data->api_token = auth()->user()->createToken('authToken')->accessToken;
-                $data->nama = $data->anggota->nama;
-                
-                // return $this->sendResponse($data, 'User retrieved successfully', 200);
-                return response()->json([
-                    'data' => $data,
-                    'fail' => false,
-                ], 200);
-            }else{
-                $gagal['password'] = array('Password salah!');
-                return response()->json([
-                    'fail' => true,
-                    'errors' => $gagal,
-                ], 401);
-            }
+                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->where('transaksi_kas.akun_id', 3)
+            ->get();
+
+            $riwayat->each(function ($data) {
+                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
+                $data->jumlah = number_format($data->jumlah,0,',','.');
+                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+            });
+            $response->put('transaksi',$riwayat);
+
+        }elseif($request->slug == 'wajib'){
+
+            $response = $response->merge([
+                'program' => 'Simpanan Wajib',
+                'saldo' => number_format($wallet->wajib,0,',','.'),
+                'slug' => 'wajib',
+            ]);
+            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
+            ->join('transaksi_kas', function($join)
+            {
+                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->where('transaksi_kas.akun_id', 4)
+            ->orderBy('tgl', 'DESC')
+            ->limit(10)
+            ->get();
+
+            $riwayat->each(function ($data) {
+                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
+                $data->jumlah = number_format($data->jumlah,0,',','.');
+                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+            });
+
+            $response->put('transaksi',$riwayat);
+            
+
+        }elseif($request->slug == 'sukarela'){
+            $response = $response->merge([
+                'program' => 'Simpanan Sukarela',
+                'saldo' => number_format($wallet->sukarela,0,',','.'),
+                'slug' => 'sukarela',
+            ]);
+
+            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
+            ->join('transaksi_kas', function($join)
+            {
+                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->where('transaksi_kas.akun_id', 14)
+            ->orderBy('tgl', 'DESC')
+            ->limit(10)
+            ->get();
+
+            $riwayat->each(function ($data) {
+                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
+                $data->jumlah = number_format($data->jumlah,0,',','.');
+                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+            });
+
+            $response->put('transaksi',$riwayat);
+
+        }elseif($request->slug == 'sosial'){
+
+            $response = $response->merge([
+                'program' => 'Simpanan Sosial',
+                'saldo' => number_format($wallet->sosial,0,',','.'),
+                'slug' => 'sosial',
+            ]);
+
+            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
+            ->join('transaksi_kas', function($join)
+            {
+                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->where('transaksi_kas.akun_id', 9)
+            ->orderBy('tgl', 'DESC')
+            ->limit(10)
+            ->get();
+
+            $riwayat->each(function ($data) {
+                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
+                $data->jumlah = number_format($data->jumlah,0,',','.');
+                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+            });
+            $response->put('transaksi',$riwayat);
         }
+
+        return response()->json([
+            'data' => $response,
+            'fail' => false,
+        ], 200);
     }
 
-    /**
-     * Logout the admin.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function logout()
+    public function riwayat($slug, Request $request)
     {
-        Auth::guard('admin')->logout();
-        return redirect()->route('login');
+        $anggota_id = $request->user()->anggota_id;
+        
+        if($slug == 'pokok'){
+            $akun_id = 3;
+        }else if($slug == 'wajib'){
+            $akun_id = 4;
+        }else if($slug == 'sukarela'){
+            $akun_id = 14;
+        }else if($slug == 'sosial'){
+            $akun_id = 9;
+        }
+
+        $transaksi = Transaksi::select('transaksi.no_transaksi', 'transaksi.tgl_transaksi as tgl', 'transaksi.jenis', 'transaksi_kas.jumlah', 'transaksi_kas.akun_id', 'transaksi.metode_pembayaran')
+        ->join('transaksi_kas', function($join)
+        {
+            $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
+        })
+        ->where('transaksi.anggota_id', $anggota_id)
+        ->where('transaksi_kas.akun_id', $akun_id)
+        ->orderBy('transaksi.tgl_transaksi', 'DESC')
+        ->paginate(15);
+        // ->get();
+
+        $transaksi->each(function ($data) {
+            $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
+            $data->jumlah = number_format($data->jumlah,0,',','.');
+            $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+        });
+        
+        return response()->json([
+            'data' => $transaksi->getCollection(),
+            'fail' => false,
+        ], 200);
     }
 
 
-    /**
-     * Redirect back after a failed login.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    private function loginFailed(){
-        return redirect()
-            ->back()
-            ->withInput()
-            ->with('error','Login failed, please try again!');
-    }
 }

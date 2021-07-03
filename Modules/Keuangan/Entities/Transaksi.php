@@ -13,6 +13,10 @@ class Transaksi extends Model
         'no_transaksi', 'anggota_id', 'teller_id', 'jenis', 'item', 'total'
     ];
 
+    protected $appends = [
+        'jenis_transaksi', 'darike'
+    ];
+
     public function anggota(){
         return $this->belongsTo('Modules\Anggota\Entities\Anggota', 'anggota_id');
     }
@@ -36,5 +40,32 @@ class Transaksi extends Model
     {
         return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas', 'no_transaksi', 'no_transaksi');
     }
+
+    public function getJenisTransaksiAttribute($value)
+    {
+        if($this->jenis == 'setoran wajib' || $this->jenis == 'setoran sukarela'){
+            return 'Deposit';
+        }elseif($this->jenis == 'penarikan sukarela'){
+            return 'Withdrawal';
+        }elseif($this->jenis == 'pendaftaran'){
+            return 'Pendaftaran';
+        }else{
+            return '';
+        }
+    }
+
+    public function getDarikeAttribute($value)
+    {
+        if($this->jenis == 'setoran wajib' || $this->jenis == 'setoran sukarela'){
+            return 'Koperasi BUMABA';
+        }elseif($this->jenis == 'penarikan sukarela'){
+            return 'Koperasi BUMABA';
+        }elseif($this->jenis == 'pendaftaran'){
+            return 'Koperasi BUMABA';
+        }else{
+            return '';
+        }
+    }
+
 
 }

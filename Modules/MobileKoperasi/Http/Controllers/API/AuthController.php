@@ -1,14 +1,15 @@
 <?php
 
-namespace Modules\MobileKoperasi\Http\Controllers;
+namespace Modules\MobileKoperasi\Http\Controllers\API;
 
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Validator;
-
-class LoginController extends Controller
+use Hash;
+class AuthController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +31,7 @@ class LoginController extends Controller
     {
         // Auth::guard('admin')->logout();
         // return redirect()->route('login');
-        echo 'dsaknlkdsa';
+        // echo 'dsaknlkdsa';
     }
 
 
@@ -70,6 +71,7 @@ class LoginController extends Controller
                 $data->save();
                 $data->api_token = auth()->user()->createToken('authToken')->accessToken;
                 $data->nama = $data->anggota->nama;
+                // $data->makeVisible('secure_pin');
                 
                 // return $this->sendResponse($data, 'User retrieved successfully', 200);
                 return response()->json([
@@ -80,6 +82,72 @@ class LoginController extends Controller
                 $gagal['password'] = array('Password salah!');
                 return response()->json([
                     'fail' => true,
+                    'errors' => $gagal,
+                ], 401);
+            }
+        }
+    }
+
+    public function setup_pin(Request $request)
+    {
+        $rules = [
+            'secure_code' => 'required',
+        ];
+
+        $pesan = [
+            'secure_code.required' => 'PIN Wajib Diisi!',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $pesan);
+        if ($validator->fails()){
+            return response()->json([
+                'fail' => true,
+                'msg' => 'Terdapat Kesalahan Di Form!',
+                'errors' => $validator->errors(),
+            ], 401);
+        }else{
+
+            $user = User::find($request->user()->id);
+            $user->secure_code = bcrypt($request->secure_code);
+            $user->save();
+
+            return response()->json([
+                'data' => $user,
+                'fail' => false,
+            ], 200);
+        }
+    }
+
+    public function pin_access(Request $request)
+    {
+        $rules = [
+            'secure_code' => 'required',
+        ];
+
+        $pesan = [
+            'secure_code.required' => 'PIN Wajib Diisi!',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $pesan);
+        if ($validator->fails()){
+            return response()->json([
+                'fail' => true,
+                'msg' => 'Terdapat Kesalahan Di Form!',
+                'errors' => $validator->errors(),
+            ], 401);
+        }else{
+            
+            $user = User::find($request->user()->id);
+            if (Hash::check($request->secure_code, $user->secure_code)) {
+                return response()->json([
+                    'access' => true,
+                    'fail' => false,
+                ], 200);
+
+            }else{
+                $gagal['password'] = array('Password salah!');
+                return response()->json([
+                    'access' => false,
                     'errors' => $gagal,
                 ], 401);
             }
