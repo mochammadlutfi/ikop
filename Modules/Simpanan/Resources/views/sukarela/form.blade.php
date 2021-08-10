@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>No. HP</label>
+                                    <label>No. Ponsel</label>
                                     <input type="text" readonly="readonly" class="form-control" name="no_hp">
                                 </div>
                                 <div class="form-group">
@@ -98,7 +98,7 @@
     </div>
 </div>
 @stop
-@push('scripts')==
+@push('scripts')
 <script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('js/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ Module::asset('Simpanan:Assets/simla/form.js') }}"></script>

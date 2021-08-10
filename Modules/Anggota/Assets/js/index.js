@@ -226,8 +226,8 @@ jQuery(function() {
            $(this).trigger('search');
         }.bind(this), 800);
     }).on('search', function(){
-    load_content();
-    $('#current_page').val(1);
+        load_content();
+        $('#current_page').val(1);
     });
 
     // Navigation Table

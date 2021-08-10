@@ -22,6 +22,7 @@
         </ul>
     </li>
 
+    
     <li class="{{ Request::is('simpanan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#">
             <i class="si si-wallet"></i>
@@ -66,6 +67,39 @@
 
         </ul>
     </li>
+
+    <li class="{{ Request::is('pembiayaan/*') ? 'open' : null }}">
+        <a class="nav-submenu" data-toggle="nav-submenu" href="#">
+            <i class="fas fa-money-bill-wave"></i>
+            <span class="sidebar-mini-hide">Pembiayaan</span>
+        </a>
+        <ul>
+
+            <li class="{{ Request::is('pembiayaan/tunai*') ? 'open' : null }}">
+                <a class="nav-submenu" data-toggle="nav-submenu" href="#">Tunai</a>
+                <ul>
+                    <li>
+                        <a class="{{ Request::is('pembiayaan/tunai/pengajuan') ? 'active' : null }}"
+                            href="{{ route('pmb_tunai.pengajuan') }}">Pengajuan</a>
+                    </li>
+                    <li>
+                        <a class="{{ Request::is('pembiayaan/tunai') ? 'active' : null }}"
+                            href="{{ route('pmb_tunai') }}">Daftar Pembiayaan</a>
+                    </li>
+                    <li>
+                        <a class="{{ Request::is('pembiayaan/tunai/penarikan') ? 'active' : null }}"
+                            href="{{ route('pmb_tunai.tagihan') }}">Tagihan</a>
+                    </li>
+                    <li>
+                        <a class="{{ Request::is('pembiayaan/tunai/riwayat') ? 'active' : null }}"
+                            href="{{ route('pmb_tunai.riwayat') }}">Riwayat Transaksi</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+
     
     <li class="{{ Request::is('keuangan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bar-chart"></i><span class="sidebar-mini-hide">Keuangan</span></a>
@@ -103,9 +137,6 @@
     <li class="{{ Request::is('laporan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-printer"></i><span class="sidebar-mini-hide">Laporan</span></a>
         <ul>
-            <li>
-                <a class="{{ Request::is('laporan/buku-besar') ? 'active' : null }}" href="{{ route('laporan.buku_besar') }}">Buku Besar</a>
-            </li>
             <li>
                 <a class="{{ Request::is('laporan/simpanan') ? 'active' : null }}" href="{{ route('laporan.simpanan') }}">Kas Simpanan</a>
             </li>

@@ -20,6 +20,6 @@ class Akun extends Model
 
     public function transaksi()
     {
-        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas', 'id', 'akun_id');
+        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas');
     }
 }

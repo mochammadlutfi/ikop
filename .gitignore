@@ -1,8 +1,12 @@
-/node_modules
-/public/hot
+
+node_modules/
+
+# laravel 8 specific
+public/js/laroute.js
+
+/public/hot.
 /public/storage
 /storage/*.key
-/vendor
 .env
 .env.backup
 .phpunit.result.cache

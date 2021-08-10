@@ -13,9 +13,9 @@ class Kas extends Model
         'nama', 'saldo'
     ];
 
-    public function trans_kas()
+    public function transaksi()
     {
-        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas', 'kas_id', 'kas_id');
+        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas');
     }
 
     public function trans_kas_untuk()

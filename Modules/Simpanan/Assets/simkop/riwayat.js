@@ -112,12 +112,10 @@ function load_content(){
                                     <i class="si si-magnifier"></i> Detail
                                 </a>
                             </td>
-                        </tr>              
+                        </tr>
                     `);
                 });
-
             }else{
-
                 $('#data-list tbody').append(`
                 <tr>
                     <td colspan="8">

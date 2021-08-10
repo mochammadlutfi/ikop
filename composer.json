@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^0.9.0",
+        "browner12/helpers": "^3.3",
         "consoletvs/charts": "7.*",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -19,6 +20,7 @@
         "nwidart/laravel-modules": "^8.2",
         "spatie/laravel-permission": "^4.0",
         "te7a-houdini/laroute": "^2.1",
+        "twilio/sdk": "^6.26",
         "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {

@@ -9,7 +9,7 @@
     ],
     "aliases": {},
     "files": [
-        "Helpers\\AnggotaHelp.php"
+        "Helpers/AnggotaHelp.php"
     ],
     "requires": []
 }

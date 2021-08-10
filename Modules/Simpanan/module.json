@@ -9,7 +9,7 @@
     ],
     "aliases": {},
     "files": [
-        "Helpers\\SimkopHelp.php"
+        "Helpers/SimkopHelp.php"
     ],
     "requires": []
 }

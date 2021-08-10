@@ -62,44 +62,15 @@
         <script src="{{ asset('js/laroute.js') }}"></script>
         <script src="{{ asset('js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
         <script src="{{ asset('js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
-        <script src="{{ asset('js/common.js') }}"></script>
         <script src="{{ asset('js/functions.js') }}"></script>
-        <script src="{{ asset('js/accounting.min.js') }}"></script>
         <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        // $('.dataTables_filter input[type="search"]').
-        // attr('placeholder','Search in this blog ....').
-        // css({'width':'500px','display':'inline-block'});
-        // $.extend( true, $.fn.dataTable.defaults, {
-        //     "responsive": true,
-        //     "pageLength": 20,
-        //     "lengthChange": false,
-        //     "language": {
-        //         'loadingRecords': '&nbsp;',
-        //         "sEmptyTable":	 "Tidak ada data yang tersedia pada tabel ini",
-        //         "sProcessing":   '<div class="spinner-grow text-primary pt-25" role="status"><span class="sr-only">Loading...</span></div>',
-        //         "sLengthMenu":   "Tampilkan _MENU_",
-        //         "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-        //         "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-        //         "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-        //         "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-        //         "sInfoPostFix":  "",
-        //         "sSearch":       "Cari:",
-        //         "sUrl":          "",
-        //         "oPaginate": {
-        //             "sFirst":    "Pertama",
-        //             "sPrevious": "Sebelumnya",
-        //             "sNext":     "Selanjutnya",
-        //             "sLast":     "Terakhir"
-        //         }
-        //     },
-        // });
         </script>
-        <!-- Laravel Scaffolding JS -->
         @stack('scripts')
+        <script src="{{ asset('js/common.js') }}"></script>
     </body>
 </html>

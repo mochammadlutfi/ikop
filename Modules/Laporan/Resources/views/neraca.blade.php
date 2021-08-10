@@ -37,89 +37,204 @@
             <table class="table table-hover table-striped data-table font-size-sm">
                 <thead class="thead-light">
                     <tr>
-                        <th colspan="2" class="text-center">Nama Akun</th>
-                        <th>Debet</th>
-                        <th>Kredit</th>
+                        <th>Nama Akun</th>
+                        <th>2020</th>
+                        <th>2021</th>
+                    </tr>
+                </thead>
+            </table>
+            {{-- Kas & Bank --}}
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <td colspan="3">
+                            <i class="fa fa-folder"></i>
+                            <b>Aset Lancar</b>
+                        </td>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($klasifikasi as $k)
                     <tr>
-                        <td width="3%">
-                            <i class="fa fa-folder"></i>
-                        </td>
-                        <td colspan="3">
-                            <b>{{ $k->kode }} {{ $k->nama }}</b>
+                        <td colspan="3" style="padding-left: 40px;font-weight: 600;">
+                            Kas & Bank
                         </td>
                     </tr>
-                    @if($k->akun)
-                        @foreach ($k->akun as $akun)
-                        <tr>
-                            <td></td>
-                            <td>{{ $akun->kode }} {{ $akun->nama }}</td>
-                            <td>
-                                Rp {{ $akun->transaksi->where('jenis', 'pemasukan')->sum('jumlah') }}</span>
-                            </td>
-                            <td>
-                                0
-                            </td>
-                        </tr>
-                        @endforeach
-                    @endif
-                    @if ($k->sub)
-                        @foreach ($k->sub as $sub)
-                        <tr>
-                            <td></td>
-                            <td colspan="3"><b>{{ $sub->kode }} {{ $sub->nama }}</b></td>
-                        </tr>
-                        @if($sub->akun)
-                            @foreach ($sub->akun as $akun)
-                            <tr>
-                                <td></td>
-                                <td>{{ $akun->kode }} {{ $akun->nama }}</td>
-                                <td>
-                                    @if($sub->nama == 'Aktiva Lancar')
-                                        @foreach($kas as $k)
-                                            @if($k->nama == $akun->nama)
-                                                Rp <span class="display_currency">{{ $k->trans_kas->where('jenis', 'pemasukan')->sum('jumlah') }}</span>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        Rp <span class="display_currency">{{ $akun->transaksi->where('jenis', 'pemasukan')->sum('jumlah') }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($sub->nama == 'Aktiva Lancar')
-                                        @foreach($kas as $k)
-                                            @if($k->nama == $akun->nama)
-                                                Rp <span class="display_currency">{{ $k->trans_kas->where('jenis', 'pengeluaran')->sum('jumlah') }}</span>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        Rp <span class="display_currency">{{ $akun->transaksi->where('jenis', 'pengeluaran')->sum('jumlah') }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        @endif
-                        @endforeach
-                    @endif
+                    @foreach($kas as $k)
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            {{ $k->nama }}
+                        </td>
+                        <td>
+                            {{ currency($k->transaksi->where('jenis', 'pemasukan')->sum('jumlah')) }}
+                        </td>
+                        <td>
+                            {{ currency($k->transaksi->where('jenis', 'pengeluaran')->sum('jumlah')) }}
+                        </td>
+                    </tr>
                     @endforeach
+                    <tr>
+                        <td style="padding-left: 55px;font-weight: 700;">
+                            Jumlah Kas & Bank
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="3" style="padding-left: 40px;font-weight: 600;">
+                            Piutang Usaha
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            Piutang Usaha
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            Piutang Anggota
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;font-weight: 700;">
+                            Jumlah Piutang Usaha
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
                 </tbody>
                 <tfoot>
-                    <tr class="">
-                        <td colspan="2" class="text-center">
-                            Jumlah Total
+                    <tr>
+                        <td style="padding-left: 15px;font-weight: 700;">
+                            JUMLAH ASET LANCAR
                         </td>
                         <td>
-                            -
+                            {{ currency(0) }}
                         </td>
                         <td>
-                            -
+                            {{ currency(0) }}
                         </td>
                     </tr>
                 </tfoot>
             </table>
+
+            
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <td colspan="3">
+                            <i class="fa fa-folder"></i>
+                            <b>Aset Tidak Lancar</b>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" style="padding-left: 40px;font-weight: 600;">
+                            Kas & Bank
+                        </td>
+                    </tr>
+                    @foreach($kas as $k)
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            {{ $k->nama }}
+                        </td>
+                        <td>
+                            {{ currency($k->transaksi->where('jenis', 'pemasukan')->sum('jumlah')) }}
+                        </td>
+                        <td>
+                            {{ currency($k->transaksi->where('jenis', 'pengeluaran')->sum('jumlah')) }}
+                        </td>
+                    </tr>
+                    @endforeach
+                    <tr>
+                        <td style="padding-left: 55px;font-weight: 700;">
+                            Jumlah Kas & Bank
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="3" style="padding-left: 40px;font-weight: 600;">
+                            Piutang Usaha
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            Piutang Usaha
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;">
+                            Piutang Anggota
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 55px;font-weight: 700;">
+                            Jumlah Piutang Usaha
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="padding-left: 15px;font-weight: 700;">
+                            JUMLAH ASET LANCAR
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                        <td>
+                            {{ currency(0) }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
         </div>
     </div>
 </div>

@@ -168,6 +168,7 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Jenssegers\Date\DateServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        browner12\helpers\HelperServiceProvider::class,
        
 
         

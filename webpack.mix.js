@@ -27,7 +27,7 @@ mix
     /* JS Backend*/
     .js('node_modules/popper.js/dist/popper.js', 'public/js').sourceMaps()
     .js('resources/js/app.js', 'public/js/laravel.app.js')
-    // .js('resources/js/codebase/app.js', 'public/js/codebase.app.js')
+    .js('resources/js/codebase/app.js', 'public/js/codebase.app.js')
 
     /* Tools */
     .browserSync('localhost:8000')

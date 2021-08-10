@@ -15,10 +15,3 @@ if(!function_exists('currency')){
 }
 
 
-// if(!function_exists('money')){
-//     function currency($value){
-//         return number_format($value,0,',','.');
-//     }
-// }
-
-
