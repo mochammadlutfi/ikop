@@ -35,8 +35,6 @@ class PPOBController extends Controller
 
     
     public function index(Request $request){
-        // dd($this->apikey);
-        // $signature  = md5($this->username.$this->apikey.'pl');
         $body = [
             "commands" => "pricelist",
             "username" => $this->username,

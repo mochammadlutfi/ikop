@@ -74,7 +74,7 @@ function load_content(){
     
     
     $.ajax({
-        url: laroute.route('simla.riwayat'),
+        url: laroute.route('pembayaran'),
         type: "GET",
         dataType: "JSON",
         data: {

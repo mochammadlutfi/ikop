@@ -65,9 +65,9 @@
                         <th width="15%">Tanggal</th>
                         <th width="12%">No. Transaksi</th>
                         <th>Anggota</th>
-                        <th>Keterangan</th>
                         <th width="15%">Bank</th>
                         <th width="15%">Jumlah</th>
+                        <th width="15%">Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -94,5 +94,5 @@
 <script src="{{ asset('js/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
 <script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('js/plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-<script src="{{ Module::asset('Simpanan:Assets/simla/riwayat.js') }}"></script>
+<script src="{{ Module::asset('Keuangan:Assets/pembayaran.js') }}"></script>
 @endpush

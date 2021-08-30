@@ -76,7 +76,10 @@ Route::prefix('keuangan')->group(function() {
         });
     });
 });
-
+Route::group(['prefix' => 'pembayaran'], function () {
+    Route::get('/', 'PembayaranController@index')->name('pembayaran');
+    Route::get('/selesai', 'PembayaranController@index')->name('pembayaran.selesai');
+});
 
 Route::group(['prefix' => 'transaksi'], function () {
     Route::get('/', 'TransactionController@index')->name('transaksi');

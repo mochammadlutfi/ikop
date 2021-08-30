@@ -30,7 +30,7 @@ class PaymentController extends Controller
 
         $data = Bank::latest()->get();
         $data->each(function ($d) {
-            $d->logo = 'http://192.168.1.7/bumaba/public/'.$d->logo;
+            $d->logo = 'http://192.168.1.3/bumaba/public/'.$d->logo;
         });
         return response()->json([
             'data' => $data,
@@ -80,7 +80,7 @@ class PaymentController extends Controller
                 $q->where('transaksi.id', $id);
             })->first();
             
-            $data->bank->logo = 'http://192.168.1.7/bumaba/public/'. $data->bank->logo;
+            $data->bank->logo = 'http://192.168.1.3/bumaba/public/'. $data->bank->logo;
             $data->jumlah = (int)$data->jumlah;
             $data->admin_fee = (int)$data->admin_fee;
 
@@ -181,7 +181,7 @@ class PaymentController extends Controller
             $transaksi->pembayaran()->save($payment);
 
             $bank = Bank::where('id', $request->bank)->first();
-            $bank->logo = 'http://192.168.1.7/bumaba/public/'. $bank->logo;
+            $bank->logo = 'http://192.168.1.3/bumaba/public/'. $bank->logo;
 
             $response = collect([
                 'id' => $payment->id,
