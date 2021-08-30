@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
@@ -14,6 +17,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "jenssegers/date": "^4.0",
         "kalnoy/nestedset": "^6.0",
+        "kreait/laravel-firebase": "^3.1",
         "laravel/framework": "^8.40",
         "laravel/passport": "^10.1",
         "laravel/tinker": "^2.5",

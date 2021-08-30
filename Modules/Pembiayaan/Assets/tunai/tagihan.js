@@ -2,21 +2,24 @@ jQuery(function() {
     moment.locale('id');
     var start =  moment().startOf('month');
     var end = moment().endOf('month');
-
     $('#filter-month').flatpickr({
         altInput: true,
-        defaultDate: moment().startOf('month'),
-        allowInput: true,
+        defaultDate : moment().startOf('month').format('F Y'),
         wrap: true,
+        locale: "id",
         plugins: [
-            new monthSelect({
-              shorthand: true, //defaults to false
-              dateFormat: "m.y", //defaults to "F Y"
-              altFormat: "F Y", //defaults to "F Y"
-              theme: "dark" // defaults to "light"
+            new monthSelectPlugin({
+                shorthand: true, //defaults to false
+                dateFormat: "m-Y", //defaults to "F Y"
+                altFormat: "F Y", //defaults to "F Y"
             })
         ]
     });
+    load_content();
+    $('input#month').on("change", function(){
+        
+        load_content();
+    })
     
     // Filter Table
     $('#search-data-list').on('input', function(){
@@ -184,8 +187,8 @@ function load_content(){
     var tgl_mulai = $('#tgl_mulai').val();
     if(tgl_mulai) parameter['tgl_mulai'] = tgl_mulai;
 
-    var tgl_akhir = $('#tgl_akhir').val();
-    if(tgl_akhir) parameter['tgl_akhir'] = tgl_akhir;
+    var filter_month = $('#month').val();
+    if(filter_month) parameter['month'] = filter_month;
     
 
     $.ajax({

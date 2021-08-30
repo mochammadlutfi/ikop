@@ -1,0 +1,13 @@
+{
+    "name": "PPOB",
+    "alias": "ppob",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PPOB\\Providers\\PPOBServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

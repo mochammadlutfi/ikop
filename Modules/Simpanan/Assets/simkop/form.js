@@ -166,12 +166,12 @@ jQuery(function() {
                             <a href="`+ laroute.route('simkop.setoran') +`" class="btn btn-outline-primary">
                                 <i class="si si-plus mr-1"></i>Tambah Setoran Lain
                             </a> 
-                            <a href="`+ laroute.route('simkop.invoice', response.no_transaksi) +`" class="btn btn-primary">
+                            <a href="`+ laroute.route('simkop.invoice', { id : response.invoice}) +`" class="btn btn-primary">
                                 <i class="si si-magnifier mr-1"></i>Detail Setoran
                             </a>`,
                         showCancelButton: false,
                         showConfirmButton: false,
-                        // allowOutsideClick: false
+                        allowOutsideClick: false
                     });
                 } else {
                     Swal.close();
@@ -195,5 +195,12 @@ jQuery(function() {
                 alert('Error adding / update data');
             }
         });
+    });
+
+    $('#field-jml_sosial').on("change, keyup", function(){
+        sosial = getRawCurrency($(this).val());
+        sosial = sosial == '' ? 0 : sosial;
+        total = 100000 + parseInt(sosial);
+        AutoNumeric.set('#field-total', total);
     });
 });

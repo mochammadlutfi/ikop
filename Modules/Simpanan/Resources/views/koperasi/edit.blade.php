@@ -51,23 +51,23 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>No. Transaksi</label>
-                            <input type="text" class="form-control" name="kd_transaksi" value="{{ $data->no_transaksi }}">
+                            <input type="text" class="form-control" name="kd_transaksi" value="{{ $data->nomor }}">
                         </div>
                         <div class="form-group">
                             <label>Tanggal Transaksi</label>
-                            <input type="text" id="field-tgl" class="form-control" name="tgl" value="{{ \Carbon\Carbon::parse($data->transaksi->tgl_transaksi)->format('d-m-Y') }}">
+                            <input type="text" id="field-tgl" class="form-control" name="tgl" value="{{ \Carbon\Carbon::parse($data->tgl)->format('d-m-Y') }}">
                             <span id="error-tgl" class="invalid-feedback"></span>
                         </div>
                         <div class="form-group">
                             <label>Periode Bulan</label>
-                            <input type="text" id="field-periode" class="form-control" name="periode" value="{{ Date::parse($data->periode)->format('F Y') }}">
+                            <input type="text" id="field-periode" class="form-control" name="periode" value="{{ Date::parse($data->simkop->periode)->format('F Y') }}">
                             <span id="error-periode" class="invalid-feedback"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="field-kas_id">Kas</label>
-                            <select class="form-control" name="kas_id" id="field-kas_id" data-id="{{ $kas->kas->id }}" data-text="{{ $kas->kas->nama }}"></select>
+                            <select class="form-control" name="kas_id" id="field-kas_id" data-id="{{ $data->kas_id }}" data-text="{{ $data->kas_nama }}"></select>
                             <span id="error-kas_id" class="invalid-feedback"></span>
                         </div>
                         <div class="form-group">

@@ -7,8 +7,12 @@ use Modules\Simpanan\Entities\Wallet;
 
 use Modules\Keuangan\Entities\Transaksi;
 use Modules\Keuangan\Entities\TransaksiKas;
+use Modules\Simpanan\Entities\SimlaTransaksi;
+use Modules\Simpanan\Entities\SimkopTransaksi;
+use Modules\Keuangan\Entities\TransaksiBayar;
 use Date;
 use Auth;
+use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
@@ -25,57 +29,133 @@ class TransaksiController extends Controller
      */
     public function index(Request $request)
     {
-        $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
+
+        $anggota_id = $request->user()->anggota_id;
+        if($request->status == 'aktif'){
+            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'status', 'jumlah']);
+                $q->with(['bank:id,logo']);
+            }])
+            ->whereHas('pembayaran', function($q){
+                $q->where('status', 'pending');
+                $q->orWhere('status', 'draft');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->orderBy('transaksi.tgl', 'DESC')
+            ->paginate(15);
+        }else{
+            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'status', 'jumlah']);
+                $q->with(['bank:id,logo']);
+            }])
+            ->whereHas('pembayaran', function($q){
+                $q->where('status', 'confirm');
+                $q->orWhere('status', 'cancel');
+            })
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->orderBy('transaksi.tgl', 'DESC')
+            ->paginate(15);
+        }
+
+        $response->each(function ($data) {
+            $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
+            $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
+            $data->total = (int)$data->total;
+            $data->tgl = Date::parse($data->tgl)->format('d F Y');
+
+            if($data->pembayaran->status === 'pending'){
+                $data->pembayaran->status = 'Menunggu Pembayaran';
+            }else if($data->pembayaran->status === 'draft'){
+                $data->pembayaran->status = 'Verifikasi';
+            }else if($data->pembayaran->status === 'confirm'){
+                $data->pembayaran->status = 'Berhasil';
+            }else{
+                $data->pembayaran->status = 'Dibatalkan';
+            }
+        });
+
+        return response()->json($response, 200);
+    }
+
+    public function detail($id, Request $request)
+    {
+
+        $data = Transaksi::
+        select('transaksi.id', 'transaksi.total', 'transaksi.nomor', 'transaksi.service', 'transaksi.jenis', 'transaksi.sub_service', 'transaksi.tgl', 'transaksi.status')->
+        with(['pembayaran' => function($q){
+            $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'jumlah']);
+            $q->with(['bank:id,logo']);
+        }])
+        ->where('transaksi.id', $id)
+        ->first();
+
+        $data->total = (int)$data->total;
+        $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
+        $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
+        $data->pembayaran->bank->logo = 'http://192.168.1.7/bumaba/public/'. $data->pembayaran->bank->logo;
+        $data->item = json_decode($data->item);
 
         return response()->json([
-            'data' => currency($wallet->sukarela),
+            'data' => $data,
             'fail' => false,
         ], 200);
     }
 
-    public function detail($slug, $no_transaksi, Request $request)
-    {
-        $response = collect();
 
-        if($slug == 'pokok'){
-            $akun_id = 3;
-        }else if($slug == 'wajib'){
-            $akun_id = 4;
-        }else if($slug == 'sukarela'){
-            $akun_id = 14;
-        }else if($slug == 'sosial'){
-            $akun_id = 9;
+    public function fix()
+    {
+        try{
+            $data = TransaksiKas::select('transaksi_kas.*','a.anggota_id', 'a.tgl as tgl_bayar')
+            ->join('transaksi as a', 'a.id', '=', 'transaksi_kas.transaksi_id')
+            ->where('transaksi_kas.akun_id', 14)
+            ->orderBy('transaksi_kas.id', 'ASC')->get();
+            // $data = SimkopTransaksi::select('simkop_transaksi.id as simkop_id','transaksi.*', 'simkop_transaksi.periode')
+            // ->join('transaksi', 'transaksi.no_transaksi', '=', 'simkop_transaksi.no_transaksi')
+            // ->orderBy('simkop_transaksi.id', 'ASC')->get();
+            // $data = Transaksi::where('akun_id', 14)->orderBy('id', 'ASC')->get();
+            foreach($data as $d){
+                // TransaksiBayar::where('no_transaksi', $d->no_transaksi)->update(array('transaksi_id' => $d->id));
+                // $bayar = new TransaksiBayar();
+                // $bayar->transaksi_id = $d->id;
+                // $bayar->method = 'Tunai';
+                // $bayar->jumlah = $d->total;
+                // $bayar->tgl_bayar = $d->tgl;
+                // $bayar->status = 'confirm';
+                // $bayar->save();
+                $simla = new SimlaTransaksi();
+                $simla->transaksi_id = $d->transaksi_id;
+                $simla->anggota_id = $d->anggota_id;
+                $simla->type = $d->jenis == 'pemasukan' ?  'isi saldo' : 'penarikan';
+                $simla->jumlah = $d->jumlah;
+                $simla->save();
+
+                // $trans = Transaksi::where('no_transaksi', $d->no_transaksi)->first(); 
+                // $trans->nomor = get_simkop_nomor($d->periode);
+                // if($d->jenis != 'pendaftaran'){
+                //     $trans->service = 'simpanan';
+                //     $trans->sub_service = 'koperasi';
+                // }
+                // $trans->save();
+                // $kop = SimkopTransaksi::where('no_transaksi', $d->no_transaksi)->first();
+                // $kop->transaksi_id = $d->id;
+                // $kop->save();
+            }
+        }catch(\QueryException $e){
+            DB::rollback();
+            return response()->json([
+                'fail' => true,
+                'pesan' => 'Terjadi Error Pada Penyimpanan Data',
+                'error' => $e,
+            ]);
         }
 
-        $transaksi = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah', 'transaksi_kas.akun_id', 'transaksi.metode_pembayaran')
-        ->join('transaksi_kas', function($join)
-        {
-            $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-        })
-        ->where('transaksi.no_transaksi', $no_transaksi)
-        ->where('transaksi_kas.akun_id', $akun_id)
-        ->first();
-
-        $transaksi->jumlah_currency = 'Rp '. number_format($transaksi->jumlah,0,',','.');
-        $transaksi->jumlah = number_format($transaksi->jumlah,0,',','.');
-        $transaksi->tgl = Date::parse($transaksi->tgl)->format('d-m-Y');
-
-        $response = $response->merge($transaksi);
-
-        $rincian = Collect([
-            ['label' => 'Jumlah', 'value' => $transaksi->jumlah_currency],
-            ['label' => 'Metode', 'value' => ucwords($transaksi->metode_pembayaran)],
-            ['label' => 'No Transaksi', 'value' => $transaksi->no_transaksi],
-            ['label' => 'Tanggal', 'value' => Date::parse($transaksi->tgl)->format('d F Y')]
-        ]);
-
-        $response->put('rincian', $rincian);
-        
-
+        DB::commit();
         return response()->json([
-            'data' => $response,
             'fail' => false,
-        ], 200);
+            'data' => $data
+        ]);
     }
 
 }

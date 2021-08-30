@@ -40,7 +40,7 @@ class TagihanController extends Controller
 
         $nominal = 0;
         $jumlah = 0;
-        $list = array();
+        $list = collect([]);
         for($i = 0; $i <= $diff_in_months; $i++)
         {
             $bulan = SimkopTransaksi::where('anggota_id', $anggota_id)
@@ -51,20 +51,68 @@ class TagihanController extends Controller
             {
                 $nominal += 100000;
                 $jumlah += 1;
-                $list[$dari->format('Y')][] = $dari->format('F Y');
+                $list->push($dari->format('d-m-Y'));
             }
             $dari->addMonth(1);
         }
 
+        $sorted = $list->sortDesc();
+
         $data = collect([
-            'program' => 'Simpanan Wajib',
-            'slug' => 'wajib',
+            'service' => 'Simpanan Wajib',
+            'subService' => 'wajib',
             'jumlah' => $jumlah,
-            'nominal' => currency($nominal),
-            'list' => $list,
+            'nominal' => (int)$nominal,
+            'list' => $sorted->values()->all(),
         ]);
 
         return $data;
     }
+
+    public function detail($slug, Request $request)
+    {
+        if($slug == 'wajib'){
+            $anggota_id = $request->user()->anggota_id;
+            $tgl_gabung = $request->user()->anggota->tgl_gabung;
+
+            $dari = Date::parse($tgl_gabung)->startOfMonth();
+            $now = Date::now()->endOfMonth();
+            $diff_in_months = $dari->diffInMonths($now);
+
+            $nominal = 0;
+            $jumlah = 0;
+            $list = collect([]);
+            for($i = 0; $i <= $diff_in_months; $i++)
+            {
+                $bulan = SimkopTransaksi::where('anggota_id', $anggota_id)
+                ->whereMonth('periode', $dari->format('m'))
+                ->whereYear('periode', $dari->format('Y'))
+                ->first();
+                if(!$bulan)
+                {
+                    $nominal += 100000;
+                    $jumlah += 1;
+                    $list->push($dari->format('F Y'));
+                }
+                $dari->addMonth(1);
+            }
+
+            $sorted = $list->sortDesc();
+
+            $data = collect([
+                'service' => 'Simpanan Wajib',
+                'subService' => 'wajib',
+                'jumlah' => $jumlah,
+                'nominal' => (int)$nominal,
+                'list' => $sorted->values()->all(),
+            ]);
+        }
+
+        return response()->json([
+            'data' => $data,
+            'fail' => false,
+        ], 200); 
+    }
+    
 
 }

@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     protected $table = 'transaksi';
-    protected $primaryKey = 'no_transaksi';
 
     protected $fillable = [
         'no_transaksi', 'anggota_id', 'teller_id', 'jenis', 'item', 'total'
     ];
 
     protected $appends = [
-        'jenis_transaksi', 'darike'
+        'darike', 'jenis_transaksi'
     ];
 
     public function anggota(){
@@ -28,27 +27,34 @@ class Transaksi extends Model
 
     public function simkop()
     {
-        return $this->belongsTo('Modules\Simpanan\Entities\SimkopTransaksi', 'no_transaksi', 'no_transaksi');
+        return $this->hasMany('Modules\Simpanan\Entities\SimkopTransaksi');
     }
 
     public function simla()
     {
-        return $this->belongsTo('Modules\Simpanan\Entities\SimlaTransaksi', 'no_transaksi', 'no_transaksi');
+        return $this->hasOne('Modules\Simpanan\Entities\SimlaTransaksi');
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasOne('Modules\Keuangan\Entities\TransaksiBayar');
     }
 
     public function transaksi_kas()
     {
-        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas', 'no_transaksi', 'no_transaksi');
+        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas');
     }
 
     public function getJenisTransaksiAttribute($value)
     {
-        if($this->jenis == 'setoran wajib' || $this->jenis == 'setoran sukarela'){
-            return 'Deposit';
+        if($this->jenis == 'setoran wajib'){
+            return 'Setoran';
         }elseif($this->jenis == 'penarikan sukarela'){
-            return 'Withdrawal';
+            return 'Penarikan';
         }elseif($this->jenis == 'pendaftaran'){
             return 'Pendaftaran';
+        }if($this->jenis == 'setoran sukarela'){
+            return 'Isi Saldo';
         }else{
             return '';
         }

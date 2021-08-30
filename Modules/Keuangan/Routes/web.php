@@ -50,6 +50,14 @@ Route::prefix('keuangan')->group(function() {
         
     });
 
+    Route::prefix('bank')->group(function() {
+        Route::get('/', 'BankController@index')->name('bank');
+        Route::post('/store','BankController@store')->name('bank.store');
+        Route::get('/edit/{id}','BankController@edit')->name('bank.edit');
+        Route::post('/update','BankController@update')->name('bank.update');
+        Route::get('/hapus/{id}','BankController@delete')->name('bank.delete');
+    });
+
     Route::group(['prefix' => 'akun'], function () {
         Route::get('/', 'AkunController@index')->name('akun');
         Route::post('/store','AkunController@store')->name('akun.store');

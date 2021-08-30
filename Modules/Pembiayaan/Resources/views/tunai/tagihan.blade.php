@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
 @section('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css"/>
-<link rel="stylesheet" href="https://raw.githubusercontent.com/flatpickr/flatpickr/master/src/plugins/monthSelect/style.css"/>
+<link rel="stylesheet" href="{{ asset('js/plugins/flatpickr/flatpickr.min.css') }}"/>
+<link rel="stylesheet" href="{{ asset('js/plugins/flatpickr/plugins/monthSelect/style.css') }}"/>
 @endsection
 @section('content')
 <div class="bg-body-light border-b">
@@ -22,7 +22,7 @@
         <div class="col-2">
             
             <div class="input-group" id="filter-month">
-                <input type="text" placeholder="Select Date.." class="form-control" data-input readonly>
+                <input type="text" class="form-control" value="" data-input readonly id="month">
                 <div class="input-group-append">
                     <span class="input-group-text input-button" title="toggle" data-toggle>
                         <i class="fa fa-calendar"></i>
@@ -97,7 +97,9 @@
 
 @push('scripts')
 <script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+<script src="{{ asset('js/plugins/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('js/plugins/flatpickr/plugins/monthSelect/index.js') }}"></script>
+<script src="{{ asset('js/plugins/flatpickr/l10n/id.js') }}"></script>
 
 {{-- <script src="https://unpkg.com/flatpickr@4.6.9/dist/plugins/monthSelect/monthSelect.js"></script> --}}
 <script src="{{ Module::asset('Pembiayaan:Assets/tunai/tagihan.js') }}"></script>

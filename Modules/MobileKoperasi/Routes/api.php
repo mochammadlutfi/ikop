@@ -22,25 +22,49 @@ Route::middleware('auth:api')->namespace('API')->group(function() {
     Route::post('/setup-pin','AuthController@setup_pin');
     Route::post('/access','AuthController@pin_access');
     
-    
-    
     Route::prefix('simpanan')->group(function() {
         Route::get('/','SimpananController@index');
         Route::get('/{slug}','SimpananController@detail');
         Route::get('/{slug}/riwayat/','SimpananController@riwayat');
     });
 
+    Route::prefix('pembiayaan')->group(function() {
+        Route::get('/','PembiayaanController@index');
+        Route::get('/{slug}','PembiayaanController@list_detail');
+        Route::get('/{slug}/riwayat/','PembiayaanController@riwayat');
+        Route::post('/pengajuan','PembiayaanController@pengajuan');
+        Route::get('/{slug}/detail/{id}','PembiayaanController@detail');
+        Route::get('/{slug}/tagihan','PembiayaanController@tagihan');
+    });
+
+    Route::prefix('payment')->group(function() {
+        Route::post('/','PaymentController@index');
+        Route::get('/bank','PaymentController@bank');
+        Route::post('/confirm','PaymentController@confirm');
+        Route::get('/detail/{id}','PaymentController@detail');
+    });
+
     Route::prefix('tagihan')->group(function() {
         Route::get('/simpanan','TagihanController@simpanan');
+        Route::get('/simpanan/{slug}','TagihanController@detail');
     });
 
     Route::prefix('simla')->group(function() {
         Route::get('/','SukarelaController@saldo');
         Route::get('/riwayat','SukarelaController@riwayat');
+        Route::post('/topup','SukarelaController@topup');
+        Route::post('/confirm','SukarelaController@confirm');
     });
 
     Route::prefix('transaksi')->group(function() {
-        Route::get('{slug}/{no_transaksi}','TransaksiController@detail');
+        Route::get('/','TransaksiController@index');
+        Route::get('/detail/{id}','TransaksiController@detail');
+    });
+
+
+    Route::prefix('ppob')->group(function() {
+        Route::get('/','PPOBController@index');
+        // Route::get('/detail/{id}','TransaksiController@detail');
     });
 
 });

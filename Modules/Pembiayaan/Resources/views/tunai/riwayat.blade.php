@@ -93,5 +93,5 @@
 <script src="{{ asset('js/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
 <script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('js/plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-<script src="{{ Module::asset('pembiayaan:Assets/tunai/riwayat.js') }}"></script>
+<script src="{{ Module::asset('Pembiayaan:Assets/tunai/riwayat.js') }}"></script>
 @endpush

@@ -2,6 +2,8 @@
 
 use Modules\Keuangan\Entities\Transaksi;
 use Modules\Keuangan\Entities\TransaksiKas;
+use Modules\Pembiayaan\Entities\PmbTunai;
+use Modules\Keuangan\Entities\TransaksiBayar;
 
 /**
  * Generate ID Anggota
@@ -21,6 +23,40 @@ if(!function_exists('generate_transaksi_kd')){
             }
         }else{
             return $kd_cabang . date('ymd') . sprintf("%05s", $no);
+        }
+    }
+}
+
+if(!function_exists('get_simla_nomor')){
+    function get_simla_nomor(){
+        $q = Transaksi::select(DB::raw('MAX(RIGHT(nomor,5)) AS kd_max'));
+        
+        $kd_cabang = 1;
+        $no = 1;
+        date_default_timezone_set('Asia/Jakarta');
+        if($q->count() > 0){
+            foreach($q->get() as $k){
+                return 'SL/'. Date::now()->format('ymd') .'/'. sprintf("%05s", abs(((int)$k->kd_max) + 1));
+            }
+        }else{
+            return 'SL/'. Date::now()->format('ymd').'/'. sprintf("%05s", 1);
+        }
+    }
+}
+
+if(!function_exists('get_simkop_nomor')){
+    function get_simkop_nomor(){
+        $q = Transaksi::select(DB::raw('MAX(RIGHT(nomor,5)) AS kd_max'));
+        
+        $kd_cabang = 1;
+        $no = 1;
+        date_default_timezone_set('Asia/Jakarta');
+        if($q->count() > 0){
+            foreach($q->get() as $k){
+                return 'SK/'. Date::now()->format('ymd') .'/'. sprintf("%05s", abs(((int)$k->kd_max) + 1));
+            }
+        }else{
+            return 'SK/'. Date::now()->format('ymd').'/'. sprintf("%05s", 1);
         }
     }
 }
@@ -53,6 +89,22 @@ if(!function_exists('get_no_transaksi_kas')){
             }
         }else{
             return $kd_trans. $kode_cabang .date('ymd').sprintf("%05s", $no);
+        }
+    }
+}
+
+if(!function_exists('get_payment_code')){
+    function get_payment_code($tgl){
+        $date = Date::parse($tgl)->format('Y-m-d');
+        $q = TransaksiBayar::select(DB::raw('MAX(code) AS kd_max'))->whereDate('tgl_bayar', $date);
+        
+        date_default_timezone_set('Asia/Jakarta');
+        if($q->count() > 0){
+            foreach($q->get() as $k){
+                return (int)$k->kd_max;
+            }
+        }else{
+            return 100;
         }
     }
 }
@@ -90,5 +142,25 @@ if(!function_exists('terbilang')){
 			$temp = terbilang($nilai/1000000000000) . " trilyun" . terbilang(fmod($nilai,1000000000000));
 		}
 		return $temp;
+    }
+}
+
+if(!function_exists('generate_pembiayaan_no')){
+    function generate_pembiayaan_no($tipe){
+        if($tipe == 'tunai'){
+            $kd = 'PBT/';
+            $q = PmbTunai::select(DB::raw('MAX(RIGHT(no_pembiayaan,5)) AS nomor_max'));
+        }
+
+
+        $no = 1;
+        date_default_timezone_set('Asia/Jakarta');
+        if($q->count() > 0){
+            foreach($q->get() as $k){
+                return $kd . date('ymd') .'/'. sprintf("%05s", abs(((int)$k->nomor_max) + 1));
+            }
+        }else{
+            return $kd . date('ymd') .'/'. sprintf("%05s", $no);
+        }
     }
 }

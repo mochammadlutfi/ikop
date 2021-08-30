@@ -51,7 +51,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>No. Transaksi</label>
-                            <input type="text" class="form-control" name="kd_transaksi" value="{{ generate_transaksi_kd() }}">
+                            <input type="text" class="form-control" name="kd_transaksi" value="{{ get_simkop_nomor() }}">
                         </div>
                         <div class="form-group">
                             <label>Tanggal Transaksi</label>
@@ -89,13 +89,13 @@
                                 <tr>
                                     <td>Simpanan Wajib</td>
                                     <td>
-                                        Rp <span class="display_currency">100000</span>
+                                        <span class="pl-3 currency">100000</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Simpanan Sosial</td>
                                     <td>
-                                        <input type="number" class="form-control jml_sosial" id="field-jml_bayar" name="jml_sosial" value="5000">
+                                        <input type="text" class="form-control input-currency" id="field-jml_sosial" name="jml_sosial" value="5000">
                                         <span id="error-sosial" class="invalid-feedback"></span>
                                     </td>
                                 </tr>
@@ -104,8 +104,7 @@
                                 <tr>
                                     <th width="30%">TOTAL SETORAN</th>
                                     <th>
-                                        <input type="hidden" id="input_total_setoran" name="total" value="105000">
-                                        <div id="display_total_setoran">RP <span id="total_simpanan" class="display_currency">105000</span></div>
+                                        <input type="text" class="form-control input-currency" readonly id="field-total" name="total" value="105000">
                                     </th>
                                 </tr>
                             </tfoot>

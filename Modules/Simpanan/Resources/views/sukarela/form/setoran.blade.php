@@ -26,7 +26,7 @@
         <div class="col-lg-12">
             <div class="block">
                 <div class="block-content pb-15">
-                    <form id="form-simla" method="POST" onsubmit="return false;">
+                    <form id="form-simla" method="POST" onsubmit="return false;" autocomplete="on">
                         @csrf
                         <input type="hidden" name="jenis" value="setoran">
                         <h2 class="content-heading pt-0">Informasi Anggota</h2>
@@ -62,7 +62,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field-kd_transaksi">No. Transaksi</label>
-                                    <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ generate_transaksi_kd() }}">
+                                    <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ get_simla_nomor() }}">
                                 </div>
                                 <div class="form-group">
                                     <label for="field-tgl">Tanggal Transaksi</label>
@@ -77,8 +77,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="field-jumlah">Nominal Simpanan</label>
-                                    <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah">
+                                    <label for="field-jumlah">Jumlah</label>
+                                    <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah" autocomplete="off">
                                     <span id="error-jumlah" class="invalid-feedback"></span>
                                 </div>
                                 <div class="form-group">

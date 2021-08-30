@@ -54,15 +54,9 @@
         @endif
         <!-- Side Navigation -->
         <div class="content-side content-side-full">
-            @if(Auth::guard('admin')->check())
+            {{-- @if(Auth::guard('admin')->check()) --}}
                 @include('layouts.menu')
-            @else
-                @role('Anggota')
-                    @include('layouts.menu.anggota')
-                @else
-                    @include('layouts.menu.pengurus')
-                @endrole
-            @endif
+            {{-- @endif --}}
         </div>
         <!-- END Side Navigation -->
     </div>

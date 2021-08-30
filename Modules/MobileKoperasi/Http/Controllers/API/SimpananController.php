@@ -5,6 +5,7 @@ namespace Modules\MobileKoperasi\Http\Controllers\API;
 use Modules\Anggota\Entities\Anggota;
 use Modules\Simpanan\Entities\Wallet;
 use Modules\Simpanan\Entities\SimkopTransaksi;
+use Modules\Simpanan\Entities\SimlaTransaksi;
 
 
 use Modules\Keuangan\Entities\Transaksi;
@@ -45,19 +46,12 @@ class SimpananController extends Controller
                 'saldo' => currency($wallet->sosial),
                 'slug' => 'sosial',
             ],
-            [
-                'program' => 'Simpanan Sukarela',
-                'saldo' => currency($wallet->sukarela),
-                'slug' => 'sukarela',
-            ],
         ]);
         return response()->json([
             'data' => $simpanan,
             'fail' => false,
         ], 200);
     }
-
-
     /**
      * Get Detail Simpanan.
      *
@@ -76,21 +70,14 @@ class SimpananController extends Controller
                 'saldo' => number_format($wallet->pokok,0,',','.'),
                 'slug' => 'pokok',
             ]);
-            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
-            ->join('transaksi_kas', function($join)
-            {
-                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-            })
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
+            ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
             ->where('transaksi.anggota_id', $anggota_id)
-            ->where('transaksi_kas.akun_id', 3)
+            ->where('a.akun_id', 3)
             ->get();
-
-            $riwayat->each(function ($data) {
-                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
-                $data->jumlah = number_format($data->jumlah,0,',','.');
-                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
-            });
-            $response->put('transaksi',$riwayat);
 
         }elseif($request->slug == 'wajib'){
 
@@ -99,25 +86,21 @@ class SimpananController extends Controller
                 'saldo' => number_format($wallet->wajib,0,',','.'),
                 'slug' => 'wajib',
             ]);
-            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
-            ->join('transaksi_kas', function($join)
-            {
-                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-            })
+            
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
+            ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
             ->where('transaksi.anggota_id', $anggota_id)
-            ->where('transaksi_kas.akun_id', 4)
+            ->where('a.akun_id', 4)
             ->orderBy('tgl', 'DESC')
             ->limit(10)
             ->get();
 
-            $riwayat->each(function ($data) {
-                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
-                $data->jumlah = number_format($data->jumlah,0,',','.');
-                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
-            });
-
-            $response->put('transaksi',$riwayat);
             
+
+            $response->put('tagihan', $this->tagihanSimkop($request));
 
         }elseif($request->slug == 'sukarela'){
             $response = $response->merge([
@@ -126,24 +109,15 @@ class SimpananController extends Controller
                 'slug' => 'sukarela',
             ]);
 
-            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
-            ->join('transaksi_kas', function($join)
-            {
-                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-            })
+            $riwayat = Transaksi::select('transaksi.*', 'a.jumlah')
+            ->join('simla_transaksi as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
             ->where('transaksi.anggota_id', $anggota_id)
-            ->where('transaksi_kas.akun_id', 14)
             ->orderBy('tgl', 'DESC')
-            ->limit(10)
+            ->limit(15)
             ->get();
-
-            $riwayat->each(function ($data) {
-                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
-                $data->jumlah = number_format($data->jumlah,0,',','.');
-                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
-            });
-
-            $response->put('transaksi',$riwayat);
 
         }elseif($request->slug == 'sosial'){
 
@@ -153,24 +127,36 @@ class SimpananController extends Controller
                 'slug' => 'sosial',
             ]);
 
-            $riwayat = Transaksi::select('transaksi.no_transaksi', 'transaksi_kas.tgl', 'transaksi.jenis', 'transaksi_kas.jumlah')
-            ->join('transaksi_kas', function($join)
-            {
-                $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-            })
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
+            ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
             ->where('transaksi.anggota_id', $anggota_id)
-            ->where('transaksi_kas.akun_id', 9)
+            ->where('a.akun_id', 9)
             ->orderBy('tgl', 'DESC')
             ->limit(10)
             ->get();
-
-            $riwayat->each(function ($data) {
-                $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
-                $data->jumlah = number_format($data->jumlah,0,',','.');
-                $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
-            });
-            $response->put('transaksi',$riwayat);
         }
+        
+
+        $riwayat->each(function ($data) {
+            $data->jumlah = (int)$data->jumlah;
+            $data->total = (int)$data->total;
+            $data->tgl = Date::parse($data->tgl)->format('d F Y');
+            $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
+            
+            if($data->pembayaran->status === 'pending'){
+                $data->pembayaran->status = 'Menunggu Pembayaran';
+            }else if($data->pembayaran->status === 'draft'){
+                $data->pembayaran->status = 'Verifikasi';
+            }else if($data->pembayaran->status === 'confirm'){
+                $data->pembayaran->status = 'Berhasil';
+            }else{
+                $data->pembayaran->status = 'Dibatalkan';
+            }
+        });
+        $response->put('transaksi',$riwayat);
 
         return response()->json([
             'data' => $response,
@@ -182,37 +168,100 @@ class SimpananController extends Controller
     {
         $anggota_id = $request->user()->anggota_id;
         
-        if($slug == 'pokok'){
-            $akun_id = 3;
+        if($slug == 'sukarela'){
+            $akun_id = 14;
         }else if($slug == 'wajib'){
             $akun_id = 4;
         }else if($slug == 'sukarela'){
-            $akun_id = 14;
+            $akun_id = 3;
         }else if($slug == 'sosial'){
             $akun_id = 9;
         }
 
-        $transaksi = Transaksi::select('transaksi.no_transaksi', 'transaksi.tgl_transaksi as tgl', 'transaksi.jenis', 'transaksi_kas.jumlah', 'transaksi_kas.akun_id', 'transaksi.metode_pembayaran')
-        ->join('transaksi_kas', function($join)
-        {
-            $join->on('transaksi.no_transaksi', '=', 'transaksi_kas.no_transaksi');
-        })
-        ->where('transaksi.anggota_id', $anggota_id)
-        ->where('transaksi_kas.akun_id', $akun_id)
-        ->orderBy('transaksi.tgl_transaksi', 'DESC')
-        ->paginate(15);
-        // ->get();
-
+        if($slug == 'sukarela'){
+            $transaksi = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'transaksi.status', 'a.jumlah')
+            ->join('simla_transaksi as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
+            ->where('a.anggota_id', $anggota_id)
+            ->orderBy('tgl', 'DESC')
+            ->paginate(15);
+        }else{
+            $transaksi = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'transaksi.status', 'a.jumlah')
+            ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+            ->with(['pembayaran' => function($q){
+                $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+            }])
+            ->where('a.akun_id', $akun_id)
+            ->where('transaksi.anggota_id', $anggota_id)
+            ->orderBy('transaksi.tgl', 'DESC')
+            ->paginate(15);
+        }
         $transaksi->each(function ($data) {
-            $data->jumlah_currency = 'Rp '. number_format($data->jumlah,0,',','.');
-            $data->jumlah = number_format($data->jumlah,0,',','.');
-            $data->tgl = Date::parse($data->tgl)->format('d-m-Y');
+            $data->jumlah = (int)$data->jumlah;
+            $data->total = (int)$data->total;
+            $data->tgl = Date::parse($data->tgl)->format('d F Y');
+            $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
+
+            if($data->pembayaran->status === 'pending'){
+                $data->pembayaran->status = 'Menunggu Pembayaran';
+            }else if($data->pembayaran->status === 'draft'){
+                $data->pembayaran->status = 'Verifikasi';
+            }else if($data->pembayaran->status === 'confirm'){
+                $data->pembayaran->status = 'Berhasil';
+            }else{
+                $data->pembayaran->status = 'Dibatalkan';
+            }
         });
         
         return response()->json([
             'data' => $transaksi->getCollection(),
             'fail' => false,
         ], 200);
+    }
+
+
+    /**
+     * Get List Simpanan.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function tagihanSimkop(Request $request){
+        
+        $tgl_gabung = $request->user()->anggota->tgl_gabung;
+        $anggota_id = $request->user()->anggota_id;
+        $dari = Date::parse($tgl_gabung)->startOfMonth();
+        $now = Date::now()->endOfMonth();
+        $diff_in_months = $dari->diffInMonths($now);
+
+        $nominal = 0;
+        $jumlah = 0;
+        $list = collect([]);
+        for($i = 0; $i <= $diff_in_months; $i++)
+        {
+            $bulan = SimkopTransaksi::where('anggota_id', $anggota_id)
+            ->whereMonth('periode', $dari->format('m'))
+            ->whereYear('periode', $dari->format('Y'))
+            ->first();
+            if(!$bulan)
+            {
+                $nominal += 100000;
+                $jumlah += 1;
+                $list->push($dari->format('d-m-Y'));
+            }
+            $dari->addMonth(1);
+        }
+
+        $sorted = $list->sortDesc();
+
+        $data = collect([
+            'jumlah' => $jumlah,
+            'nominal' => (int)$nominal,
+            'list' => $sorted->values()->all(),
+        ]);
+
+        return $data;
     }
 
 

@@ -23,7 +23,7 @@
     </div>
     <div class="block">
         <div class="block-content pb-15">
-            <form id="form-withdraw" method="POST" onsubmit="return false;">
+            <form id="form-withdraw" method="POST" onsubmit="return false;" autocomplete="on">
                 @csrf
                 <input type="hidden" name="jenis" value="penarikan">
                 <h2 class="content-heading pt-0">Informasi Anggota</h2>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                 </div>
-                <h2 class="content-heading pt-0">Informasi Setoran</h2>
+                <h2 class="content-heading pt-0">Informasi Penarikan</h2>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -74,8 +74,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="field-jumlah">Nominal Simpanan</label>
-                            <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah">
+                            <label for="field-jumlah">Jumlah</label>
+                            <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah" autocomplete="off" data-max="">
                             <span id="error-jumlah" class="invalid-feedback"></span>
                         </div>
                         <div class="form-group">

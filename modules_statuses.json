@@ -10,5 +10,8 @@
     "Pembiayaan": true,
     "Pengurus": true,
     "Pengguna": true,
-    "MobileKoperasi": true
+    "MobileKoperasi": true,
+    "Bank": true,
+    "PPOB": true,
+    "Pembayaran": true
 }

@@ -157,12 +157,12 @@ jQuery(function() {
                             <a href="`+ laroute.route('simla.setoran') +`" class="btn btn-outline-primary">
                                 <i class="si si-plus mr-1"></i>Tambah Setoran Lain
                             </a> 
-                            <a href="`+ laroute.route('simla.invoice', response.no_invoice) +`" class="btn btn-primary">
+                            <a href="`+ laroute.route('simla.invoice', {id : response.invoice}) +`" class="btn btn-primary">
                                 <i class="si si-magnifier mr-1"></i>Detail Setoran
                             </a>`,
                         showCancelButton: false,
                         showConfirmButton: false,
-                        // allowOutsideClick: false
+                        allowOutsideClick: false
                     });
                 } else {
                     Swal.close();

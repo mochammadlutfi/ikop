@@ -37,8 +37,7 @@ class SukarelaController extends Controller
      */
     public function setoran(Request $request)
     {
-        $type = 'deposit';
-
+        $type = 'isi saldo';
         return view('simpanan::sukarela.form', compact('type'));
     }
     
@@ -80,14 +79,12 @@ class SukarelaController extends Controller
             try{
 
                 $transaksi = new Transaksi();
-                $transaksi->no_transaksi = $request->kd_transaksi;
                 $transaksi->anggota_id = $request->anggota_id;
                 $transaksi->jenis = $request->type === 'deposit' ? 'setoran sukarela' : 'penarikan sukarela';
                 $transaksi->teller_id   = auth()->user()->id;
                 $transaksi->item = json_encode($item);
                 $transaksi->total = $request->jumlah;
-                $transaksi->tgl_transaksi = Carbon::parse($request->tgl)->format('Y-m-d');
-                $transaksi->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
+                $transaksi->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
                 $transaksi->save();
 
 
@@ -104,7 +101,6 @@ class SukarelaController extends Controller
 
                 $kas = new TransaksiKas();
                 $kas->kd_trans_kas = get_no_transaksi_kas($request->type === 'deposit' ? 'pemasukan' : 'pengeluaran');
-                $kas->no_transaksi = $request->kd_transaksi;
                 $kas->kas_id = $request->kas_id;
                 $kas->jumlah = $request->jumlah;
                 $kas->keterangan = 'Simpanan Sukarela';
@@ -113,7 +109,7 @@ class SukarelaController extends Controller
                 $kas->user_id = auth()->user()->id;
                 $kas->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $kas->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $kas->save();
+                $transaksi->transaksi_kas()->save($kas);
 
             }catch(\QueryException $e){
                 DB::rollback();
@@ -128,13 +124,11 @@ class SukarelaController extends Controller
             try{
 
                 $simla = new SimlaTransaksi();
-                $simla->no_transaksi = $request->kd_transaksi;
                 $simla->anggota_id = $request->anggota_id;
                 $simla->type = $request->type;
-                $simla->amount = $request->jumlah;
+                $simla->jumlah = $request->jumlah;
                 $simla->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $simla->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $simla->save();
+                $transaksi->simla()->save($simla);
 
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
                 if($request->type === 'deposit')
@@ -318,24 +312,29 @@ class SukarelaController extends Controller
             $tgl_mulai = Carbon::parse($request->tgl_mulai);
             $tgl_akhir = Carbon::parse($request->tgl_akhir);
 
-            $data = Transaksi::with([
-                'anggota' => function($query) use ($keyword) {
-                    $query->select('anggota_id','nama');
-                },
-                'teller' => function($query) {
-                    $query->select('id', 'anggota_id');
-                },
-                'simla'
-            ])
-            // ->whereBetween('tgl_transaksi', [$tgl_mulai, $tgl_akhir])
-            ->whereHas('transaksi_kas', function ($query) use ($keyword) {
-                return $query->where('akun_id', 14);
+            $data = SimlaTransaksi::select('a.anggota_id', 'a.nama', 'simla_transaksi.jumlah', 'd.nama as teller', 'simla_transaksi.type', 'b.nomor', 'b.tgl', 'b.id')
+            ->leftJoin('anggota as a', 'a.anggota_id', '=', 'simla_transaksi.anggota_id')
+            ->leftJoin('transaksi as b', 'b.id', '=', 'simla_transaksi.transaksi_id')
+            ->leftJoin('admins as c', 'c.id', '=', 'b.teller_id')
+            ->leftJoin('anggota as d', 'd.anggota_id', '=', 'c.anggota_id')
+            // with([
+            //     'anggota' => function($query) use ($keyword) {
+            //         $query->select('anggota_id','nama');
+            //     },
+            //     'teller' => function($query) {
+            //         $query->select('id', 'anggota_id');
+            //     },
+            //     'simla'
+            // ])
+            ->whereBetween('b.tgl', [$tgl_mulai, $tgl_akhir])
+            ->where(function ($query) use ($keyword) {
+                return $query->where('a.anggota_id', 'like', '%' . $keyword . '%')
+                ->orWhere('a.nama', 'like', '%' . $keyword . '%')
+                ->orWhere('b.jenis', 'like', '%' . $keyword . '%')
+                ->orWhere('b.nomor', 'like', '%' . $keyword . '%')
+                ->orWhere('d.nama', 'like', '%' . $keyword . '%');
             })
-            ->whereHas('anggota', function ($query) use ($keyword) {
-                return $query->where('anggota_id', 'like', '%' . $keyword . '%')
-                ->orWhere('nama', 'like', '%' . $keyword . '%');
-            })
-            ->orderBy('tgl_transaksi', 'DESC')
+            ->orderBy('tgl', 'DESC')
             ->paginate(20);
 
             return response()->json($data);
@@ -382,7 +381,7 @@ class SukarelaController extends Controller
     {
         if ($request->isMethod('get')){
 
-            return view('simpanan::sukarela.penarikan');
+            return view('simpanan::sukarela.form.penarikan');
         }else {
             $rules = [
                 'id_anggota' => 'required',

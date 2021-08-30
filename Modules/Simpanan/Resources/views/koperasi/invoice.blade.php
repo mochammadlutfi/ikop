@@ -14,10 +14,10 @@
     <div class="content-heading pt-0 mb-3">
         Detail Transaksi
         <div class="float-right">
-            <a href="{{ route('simkop.invoice.print', $data->no_transaksi) }}" class="btn btn-secondary btn-sm" target="_blank">
+            <a href="{{ route('simkop.invoice.print', $data->id) }}" class="btn btn-secondary btn-sm" target="_blank">
                 <i class="si si-printer mr-1"></i> Print
             </a>
-            <a href="{{ route('simkop.edit', $data->no_transaksi) }}" class="btn btn-secondary btn-sm" target="_blank">
+            <a href="{{ route('simkop.edit', $data->id) }}" class="btn btn-secondary btn-sm" target="_blank">
                 <i class="si si-note mr-1"></i> Edit
             </a>
         </div>

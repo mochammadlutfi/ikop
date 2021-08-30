@@ -23,6 +23,19 @@
     </li>
 
     
+    <li class="{{ Request::is('pembayaran/*') ? 'open' : null }}">
+        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-money"></i><span class="sidebar-mini-hide">Pembayaran</span></a>
+        <ul>
+            <li>
+                <a class="{{ Request::is('pembayaran/pending') ? 'active' : null }}" href="{{ route('pembayaran') }}">Pembayaran Aktif</a>
+            </li>
+            <li>
+                <a class="{{ Request::is('pembayaran/aktif') ? 'active' : null }}" href="{{ route('pembayaran.selesai') }}">Pembayaran Selesai</a>
+            </li>
+        </ul>
+    </li>
+
+    
     <li class="{{ Request::is('simpanan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#">
             <i class="si si-wallet"></i>
@@ -104,6 +117,9 @@
     <li class="{{ Request::is('keuangan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bar-chart"></i><span class="sidebar-mini-hide">Keuangan</span></a>
         <ul>
+            <li>
+                <a class="{{ Request::is('keuangan/bank') ? 'active' : null }}" href="{{ route('bank') }}">Data Bank</a>
+            </li>
             <li class="{{ Request::is('keuangan/kas/*', 'keuangan/kas') ? 'open' : null }}">
                 <a class="nav-submenu" data-toggle="nav-submenu" href="#">Kas</a>
                 <ul>

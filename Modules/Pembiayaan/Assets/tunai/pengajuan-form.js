@@ -173,5 +173,5 @@ function _hitung() {
     $('#field-jumlah_bunga').val(total);
 
     AutoNumeric.set('#field-angsuran_pokok', jumlah / tenor);
-    AutoNumeric.set('#field-angsuran_bunga', total + jumlah / tenor);
+    AutoNumeric.set('#field-angsuran_bunga', (total + jumlah) / tenor);
 }

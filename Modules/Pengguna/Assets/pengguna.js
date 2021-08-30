@@ -295,7 +295,6 @@ function load_content(){
                             <td>${ response.data[k].nama }</td>
                             <td>${ response.data[k].username }</td>
                             <td>${ response.data[k].jabatan }</td>
-                            <td>${ response.data[k].status }</td>
                             <td class="text-center">
                                 <a class="btn btn-secondary btn-sm js-tooltip" id="btn-edit" data-toggle="tooltip" data-placement="top" title="Ubah"  href="javascript:void(0)" data-id="${ response.data[k].id }">
                                     <i class="si si-note"></i>

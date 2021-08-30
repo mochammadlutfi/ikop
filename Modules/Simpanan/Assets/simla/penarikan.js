@@ -1,5 +1,4 @@
 jQuery(function() { 
-    // load_content();
     moment.locale('id');
     var form = $("#form-withdraw");
     var anggota = $('#field-anggota_id').select2({
@@ -95,19 +94,6 @@ jQuery(function() {
         $(this).val(null).trigger('change');
         e.preventDefault();
     });
-
-    if($('input').hasClass('input-currency')){
-        new AutoNumeric(".input-currency", {
-            allowDecimalPadding: false,
-            alwaysAllowDecimalCharacter: true,
-            caretPositionOnFocus: "start",
-            currencySymbol: "Rp ",
-            decimalCharacter: ",",
-            decimalPlaces: 0,
-            digitGroupSeparator: ".",
-            unformatOnSubmit: true
-        });
-    }
 
     $('#field-tgl').datetimepicker({
         "format": "DD-MM-YYYY",

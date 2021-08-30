@@ -93,22 +93,22 @@ function load_content(){
                 $.each(response.data, function(k, v) {
                     $('#data-list tbody').append(`
                         <tr>
-                            <td>${ moment(response.data[k].tgl_transaksi).format('D MMMM YYYY') }</td>
-                            <td>${ response.data[k].no_transaksi }</td>
+                            <td>${ moment(response.data[k].tgl).format('D MMMM YYYY') }</td>
+                            <td>${ response.data[k].nomor }</td>
                             <td>
-                                <div class="font-size-16 font-w600">${ response.data[k].anggota.anggota_id }</div>
-                                <div class="font-size-15">${ response.data[k].anggota.nama }</div>
+                                <div class="font-size-16 font-w600">${ response.data[k].anggota_id }</div>
+                                <div class="font-size-15">${ response.data[k].nama }</div>
                             </td>
-                            <td>${ moment(response.data[k].simkop.periode).format('MMMM YYYY') }</td>
+                            <td>${ moment(response.data[k].periode).format('MMMM YYYY') }</td>
                             <td>
                                 ${ response.data[k].jenis.toLowerCase().replace(/\b[a-z]/g, function(letter) {
                                     return letter.toUpperCase();
                                 }) }
                             </td>
                             <td><div class="currency">${ response.data[k].total }</div></td>
-                            <td>${ response.data[k].teller.nama }</td>
+                            <td>${ response.data[k].teller }</td>
                             <td class="text-center">
-                                <a class="btn btn-secondary btn-sm js-tooltip" data-toggle="tooltip" data-placement="top" title="Detail Transaksi" href="${ laroute.route('simkop.invoice', { id: response.data[k].no_transaksi }) }">
+                                <a class="btn btn-secondary btn-sm js-tooltip" data-toggle="tooltip" data-placement="top" title="Detail Transaksi" href="${ laroute.route('simkop.invoice', { id: response.data[k].id }) }">
                                     <i class="si si-magnifier"></i> Detail
                                 </a>
                             </td>

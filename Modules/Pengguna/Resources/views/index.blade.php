@@ -54,7 +54,6 @@
                         <th width="25%">Nama</th>
                         <th width="15%">Username</th>
                         <th width="15%">Jabatan</th>
-                        <th width="15%">Status</th>
                         <th width="9%">Aksi</th>
                     </tr>
                 </thead>

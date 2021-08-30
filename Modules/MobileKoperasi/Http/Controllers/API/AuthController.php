@@ -29,9 +29,6 @@ class AuthController extends Controller
      */
     public function index()
     {
-        // Auth::guard('admin')->logout();
-        // return redirect()->route('login');
-        // echo 'dsaknlkdsa';
     }
 
 
