@@ -65,12 +65,10 @@ class AuthController extends Controller
             if(auth()->attempt($request->only('no_hp','password')))
             {
                 $data = auth()->user();
+                $data->device_id = $request->device_token;
                 $data->save();
                 $data->api_token = auth()->user()->createToken('authToken')->accessToken;
                 $data->nama = $data->anggota->nama;
-                // $data->makeVisible('secure_pin');
-                
-                // return $this->sendResponse($data, 'User retrieved successfully', 200);
                 return response()->json([
                     'data' => $data,
                     'fail' => false,

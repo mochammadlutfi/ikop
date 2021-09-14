@@ -28,6 +28,8 @@ Route::get('/coba', function () {
         ->verifications
         ->create($phone, "sms");
 });
+
+
 // Route::namespace('Auth')->group(function(){
 // });
 

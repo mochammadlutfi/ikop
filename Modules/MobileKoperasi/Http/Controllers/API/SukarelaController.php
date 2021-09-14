@@ -10,7 +10,10 @@ use Modules\Keuangan\Entities\TransaksiKas;
 use Modules\Keuangan\Entities\Payment;
 use Modules\Simpanan\Entities\SimlaTransaksi;
 use Modules\Bank\Entities\Bank;
+
+use App\Models\User;
 use Date;
+use Hash;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,10 +33,15 @@ class SukarelaController extends Controller
     {
         $anggota_id = $request->user()->anggota_id;
 
-        $wallet = Wallet::where('anggota_id', $anggota_id)->first();
+        $saldo = SimlaTransaksi::
+        leftJoin('transaksi as a', 'a.id', '=', 'simla_transaksi.transaksi_id')
+        ->where('a.status', 1)
+        ->where('a.anggota_id', $anggota_id)
+        ->sum('jumlah');
+        
 
         return response()->json([
-            'data' => currency($wallet->sukarela),
+            'data' =>(int)$saldo,
             'fail' => false,
         ], 200);
     }
@@ -43,12 +51,13 @@ class SukarelaController extends Controller
     {
         $anggota_id = $request->user()->anggota_id;
 
-        $response = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'transaksi.status', 'a.jumlah')
+        $response = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'transaksi.status', 'a.jumlah', 'transaksi.status')
         ->join('simla_transaksi as a', 'a.transaksi_id', '=', 'transaksi.id')
         ->with(['pembayaran' => function($q){
             $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
         }])
         ->where('a.anggota_id', $anggota_id)
+        ->where('transaksi.status', 1)
         ->orderBy('tgl', 'DESC')
         ->paginate(15);
 
@@ -56,33 +65,36 @@ class SukarelaController extends Controller
             $data->jumlah = (int)$data->jumlah;
             $data->total = (int)$data->total;
             $data->tgl = Date::parse($data->tgl)->format('d F Y');
-            $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
-            
-            if($data->pembayaran->status === 'pending'){
-                $data->pembayaran->status = 'Menunggu Pembayaran';
-            }else if($data->pembayaran->status === 'draft'){
-                $data->pembayaran->status = 'Verifikasi';
-            }else if($data->pembayaran->status === 'confirm'){
-                $data->pembayaran->status = 'Berhasil';
+
+            if($data->pembayaran == null){
+                $data->pembayaran->jumlah = (int)12;
+
             }else{
-                $data->pembayaran->status = 'Dibatalkan';
+                $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
+                if($data->pembayaran->status === 'pending'){
+                    $data->pembayaran->status = 'Menunggu Pembayaran';
+                }else if($data->pembayaran->status === 'draft'){
+                    $data->pembayaran->status = 'Verifikasi';
+                }else if($data->pembayaran->status === 'confirm'){
+                    $data->pembayaran->status = 'Berhasil';
+                }else{
+                    $data->pembayaran->status = 'Dibatalkan';
+                }
             }
         });
 
         return response()->json($response, 200);
     }
 
-    public function topup(Request $request)
+    public function transfer(Request $request)
     {
-        // dd($request->all());
+        $user = User::find($request->user()->id);
         $rules = [
             'jumlah' => 'required',
-            'bank' => 'required',
         ];
 
         $pesan = [
             'jumlah.required' => 'Jumlah Simpanan Wajib Diisi!',
-            'bank.required' => 'Tanggal Transaksi Wajib Diisi!',
         ];
 
         $validator = Validator::make($request->all(), $rules, $pesan);
@@ -90,9 +102,8 @@ class SukarelaController extends Controller
             return response()->json([
                 'fail' => true,
                 'errors' => $validator->errors()
-            ]);
-        }else{
-
+            ], 203);
+        }else if(Hash::check($request->secure_code, $user->secure_code)){
             $item = collect([
                 array(
                     'keterangan' => 'Simpanan Sukarela',
@@ -100,24 +111,39 @@ class SukarelaController extends Controller
                     'akun' => 14,
                 ),
             ]);
-
             DB::beginTransaction();
             try{
 
-                $kd_transaksi = generate_transaksi_kd();
+                $nomor = get_simla_nomor();
                 $anggota_id = $request->user()->anggota_id;
                 $tgl = Date::now();
 
+                $item = collect([
+                    array(
+                        'keterangan' => 'Simpanan Sukarela',
+                        'jumlah' => $request->jumlah,
+                        'akun' => 14,
+                    ),
+                ]);
+
                 $transaksi = new Transaksi();
-                $transaksi->no_transaksi = $kd_transaksi;
+                $transaksi->nomor = $nomor;
                 $transaksi->anggota_id = $anggota_id;
-                $transaksi->jenis = 'setoran sukarela';
+                $transaksi->jenis = 'transfer sukarela';
+                $transaksi->service = 'simpanan';
+                $transaksi->sub_service = 'sukarela';
                 $transaksi->item = json_encode($item);
                 $transaksi->total = $request->jumlah;
-                $transaksi->tgl_transaksi = $tgl->format('Y-m-d');
-                $transaksi->created_at = $tgl->format('Y-m-d H:i:s');
+                $transaksi->tgl = $tgl->format('Y-m-d H:i:s');
+                $transaksi->status = 1;
                 $transaksi->save();
 
+                $simla = new SimlaTransaksi();
+                $simla->anggota_id = $anggota_id;
+                $simla->tujuan = $request->anggota_id;
+                $simla->type = 'transfer';
+                $simla->jumlah = -$request->jumlah;
+                $transaksi->simla()->save($simla);
 
             }catch(\QueryException $e){
                 DB::rollback();
@@ -127,50 +153,16 @@ class SukarelaController extends Controller
                     'error' => $e,
                 ]);
             }
-
-            try{
-                
-
-                $simla = new SimlaTransaksi();
-                $simla->no_transaksi = $kd_transaksi;
-                $simla->anggota_id = $anggota_id;
-                $simla->type = 'isi saldo';
-                $simla->amount = $request->jumlah;
-                $simla->status = 'pending';
-                $simla->tgl = $tgl->format('Y-m-d H:i:s');
-                $simla->created_at = $tgl->format('Y-m-d H:i:s');
-                $simla->save();
-
-                $payment = new Payment();
-                $payment->transaksi_id = $kd_transaksi;
-                $payment->jumlah = $request->jumlah;
-                $payment->bank_id = $request->bank;
-                $payment->code = get_payment_code($tgl);
-                $payment->tgl = $tgl->format('Y-m-d H:i:s');
-                $payment->created_at = $tgl->format('Y-m-d H:i:s');
-                $payment->save();
-
-                $payment->no_transaksi = $kd_transaksi;
-                $payment->tgl = $tgl->format('d m Y');
-                $payment->jumlah = (int)$payment->jumlah;
-                $payment->bank = Bank::where('id', '=', $payment->bank_id)->first();
-                $payment->bank->logo = asset($payment->bank->logo);
-
-            }catch(\QueryException $e){
-                DB::rollback();
-                return response()->json([
-                    'fail' => true,
-                    'pesan' => 'Terjadi Error Pada Penyimpanan Data',
-                    'error' => $e,
-                ]);
-            }
-
-            // DB::commit();
+            DB::commit();
             return response()->json([
                 'fail' => false,
-                'data' => $payment,
+                'data' => $transaksi,
             ]);
         }
+        return response()->json([
+            'fail' => true,
+            'pesan' => 'Security Code Salah',
+        ], 203);
     }
 
     public function confirm(Request $request)

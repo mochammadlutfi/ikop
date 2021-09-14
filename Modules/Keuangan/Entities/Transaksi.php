@@ -35,9 +35,16 @@ class Transaksi extends Model
         return $this->hasOne('Modules\Simpanan\Entities\SimlaTransaksi');
     }
 
+    public function ppob()
+    {
+        return $this->hasOne('Modules\PPOB\Entities\TransaksiPPOB');
+    }
+
     public function pembayaran()
     {
-        return $this->hasOne('Modules\Keuangan\Entities\TransaksiBayar');
+        return $this->hasOne('Modules\Keuangan\Entities\TransaksiBayar')->withDefault([
+            'status' => 'confirm',
+        ]);
     }
 
     public function transaksi_kas()
@@ -53,8 +60,12 @@ class Transaksi extends Model
             return 'Penarikan';
         }elseif($this->jenis == 'pendaftaran'){
             return 'Pendaftaran';
-        }if($this->jenis == 'setoran sukarela'){
+        }else if($this->jenis == 'setoran sukarela'){
             return 'Isi Saldo';
+        }else if($this->jenis == 'transfer sukarela'){
+            return 'Transfer';
+        }else if($this->jenis == 'pembelian'){
+            return 'Pembelian '.ucwords($this->service);
         }else{
             return '';
         }

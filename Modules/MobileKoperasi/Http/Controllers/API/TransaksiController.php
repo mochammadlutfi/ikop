@@ -82,19 +82,21 @@ class TransaksiController extends Controller
     public function detail($id, Request $request)
     {
 
-        $data = Transaksi::
-        select('transaksi.id', 'transaksi.total', 'transaksi.nomor', 'transaksi.service', 'transaksi.jenis', 'transaksi.sub_service', 'transaksi.tgl', 'transaksi.status')->
+        $data = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.nomor', 'transaksi.service', 'transaksi.jenis', 'transaksi.sub_service', 'transaksi.tgl', 'transaksi.status')->
         with(['pembayaran' => function($q){
             $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'jumlah']);
             $q->with(['bank:id,logo']);
         }])
         ->where('transaksi.id', $id)
         ->first();
+        // dd($data);
 
         $data->total = (int)$data->total;
         $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
         $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
-        $data->pembayaran->bank->logo = 'http://192.168.1.3/bumaba/public/'. $data->pembayaran->bank->logo;
+        if($data->pembayaran->bank !== null){
+            $data->pembayaran->bank->logo = 'http://192.168.1.3/bumaba/public/'. $data->pembayaran->bank->logo;
+        }
         $data->item = json_decode($data->item);
 
         return response()->json([

@@ -13,5 +13,6 @@
     "MobileKoperasi": true,
     "Bank": true,
     "PPOB": true,
-    "Pembayaran": true
+    "Pembayaran": true,
+    "Slider": true
 }

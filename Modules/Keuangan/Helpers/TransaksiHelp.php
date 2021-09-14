@@ -4,28 +4,34 @@ use Modules\Keuangan\Entities\Transaksi;
 use Modules\Keuangan\Entities\TransaksiKas;
 use Modules\Pembiayaan\Entities\PmbTunai;
 use Modules\Keuangan\Entities\TransaksiBayar;
+use Modules\PPOB\Entities\TransaksiPPOB;
 
 /**
  * Generate ID Anggota
  * Rumus : Kode Cabang + Tahun + Bulan + No Urut
  * @return Renderable
  */
-if(!function_exists('generate_transaksi_kd')){
-    function generate_transaksi_kd(){
-        $q = Transaksi::select(DB::raw('MAX(RIGHT(no_transaksi,5)) AS kd_max'));
+if(!function_exists('get_ppob_code')){
+    function get_ppob_code($type){
+        $date = Date::now()->format('Y-m-d');
+        $q = TransaksiPPOB::select(DB::raw('MAX(code) AS kd_max'))->whereDate('created_at', $date);
         
-        $kd_cabang = 1;
-        $no = 1;
         date_default_timezone_set('Asia/Jakarta');
+        if($type === 'pulsa'){
+            $code = 'BP/';
+        }else if($type === 'data'){
+            $code = 'BD/';
+        }
         if($q->count() > 0){
             foreach($q->get() as $k){
-                return $kd_cabang . date('ymd') . sprintf("%05s", abs(((int)$k->kd_max) + 1));
+                return $code. Date::now()->format('ymd') .'/'. sprintf("%05s", abs(((int)$k->kd_max) + 1));
             }
         }else{
-            return $kd_cabang . date('ymd') . sprintf("%05s", $no);
+            return $code. Date::now()->format('ymd').'/'. sprintf("%05s", 1);
         }
     }
 }
+
 
 if(!function_exists('get_simla_nomor')){
     function get_simla_nomor(){

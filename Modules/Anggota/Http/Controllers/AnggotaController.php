@@ -261,14 +261,7 @@ class AnggotaController extends Controller
                         }
                     }
                 }
-                // $data = Transaksi::orderBy('tgl_transaksi', 'DESC')->get();
-
-                // foreach($data as $d){
-                //     $kas = SimkopTransaksi::where('no_transaksi', $d->no_transaksi)->first();
-                //     $kas->created_at = $d->tgl_transaksi;
-                //     $kas->save();
-                // }
-
+            
             }catch(\QueryException $e){
                 DB::rollback();
                 return response()->json([

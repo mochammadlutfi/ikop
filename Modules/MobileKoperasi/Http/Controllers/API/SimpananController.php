@@ -70,11 +70,12 @@ class SimpananController extends Controller
                 'saldo' => number_format($wallet->pokok,0,',','.'),
                 'slug' => 'pokok',
             ]);
-            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah', 'transaksi.status')
             ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
             ->where('a.akun_id', 3)
             ->get();
@@ -87,11 +88,12 @@ class SimpananController extends Controller
                 'slug' => 'wajib',
             ]);
             
-            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
-            ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah', 'transaksi.status')
+            ->join('transaksi_line as a', 'a.transaksi_id', '=', 'transaksi.id')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
             ->where('a.akun_id', 4)
             ->orderBy('tgl', 'DESC')
@@ -114,6 +116,7 @@ class SimpananController extends Controller
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
             ->orderBy('tgl', 'DESC')
             ->limit(15)
@@ -127,11 +130,12 @@ class SimpananController extends Controller
                 'slug' => 'sosial',
             ]);
 
-            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah')
+            $riwayat = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah', 'transaksi.status')
             ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
             ->where('a.akun_id', 9)
             ->orderBy('tgl', 'DESC')
@@ -184,6 +188,7 @@ class SimpananController extends Controller
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('a.anggota_id', $anggota_id)
             ->orderBy('tgl', 'DESC')
             ->paginate(15);
@@ -193,6 +198,7 @@ class SimpananController extends Controller
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
             }])
+            ->where('transaksi.status', 1)
             ->where('a.akun_id', $akun_id)
             ->where('transaksi.anggota_id', $anggota_id)
             ->orderBy('transaksi.tgl', 'DESC')

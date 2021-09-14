@@ -326,7 +326,7 @@ class SukarelaController extends Controller
             //     },
             //     'simla'
             // ])
-            ->whereBetween('b.tgl', [$tgl_mulai, $tgl_akhir])
+            // ->whereBetween('b.tgl', [$tgl_mulai, $tgl_akhir])
             ->where(function ($query) use ($keyword) {
                 return $query->where('a.anggota_id', 'like', '%' . $keyword . '%')
                 ->orWhere('a.nama', 'like', '%' . $keyword . '%')

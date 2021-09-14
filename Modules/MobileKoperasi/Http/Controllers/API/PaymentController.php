@@ -38,7 +38,6 @@ class PaymentController extends Controller
         ], 200);
     }
 
-
     public function confirm(Request $request)
     {
         $anggota_id = $request->user()->anggota_id;
@@ -117,24 +116,20 @@ class PaymentController extends Controller
                 'errors' => $validator->errors()
             ]);
         }else{
-            // dd($request->tagihan_id);
             $coba = '';
             $someArray = ["01-06-2021","01-07-2021"];
             foreach($someArray as $tagihan){
                 $coba .= ' - '. $tagihan;
             }
-            // $coba = '[{ 01-07-2021}]';
-            // dd();
-            if($request->service == 'sukarela'){
+            if($request->slug == 'simla'){
                 $response =  $this->sukarela($request);
-            }elseif($request->service == 'wajib'){
+            }elseif($request->slug == 'wajib'){
                 $response =  $this->wajib($request);
             }
 
             return $response;
         }
     }
-
 
     protected function sukarela(Request $request)
     {
@@ -155,7 +150,7 @@ class PaymentController extends Controller
             $transaksi = new Transaksi();
             $transaksi->nomor = $nomor;
             $transaksi->anggota_id = $anggota_id;
-            $transaksi->jenis = $request->slug == 'deposit' ? 'setoran sukarela' : 'penarikan sukarela';
+            $transaksi->jenis = 'setoran sukarela';
             $transaksi->service = 'simpanan';
             $transaksi->sub_service = 'sukarela';
             $transaksi->item = json_encode($item);
@@ -166,7 +161,7 @@ class PaymentController extends Controller
 
             $simla = new SimlaTransaksi();
             $simla->anggota_id = $anggota_id;
-            $simla->type = $request->slug == 'deposit' ? 'isi saldo' : 'penarikan';
+            $simla->type = 'isi saldo';
             $simla->jumlah = $request->jumlah;
             $transaksi->simla()->save($simla);
 
@@ -179,6 +174,18 @@ class PaymentController extends Controller
             $payment->code = get_payment_code($tgl);
             $payment->tgl_bayar = $tgl->format('Y-m-d H:i:s');
             $transaksi->pembayaran()->save($payment);
+
+            $kas = new TransaksiKas();
+            $kas->kas_id = $request->kas_id;
+            $kas->jumlah = $request->jumlah;
+            $kas->keterangan = 'Simpanan Sukarela';
+            $kas->jenis = $request->type === 'deposit' ? 'pemasukan' : 'pengeluaran';
+            $kas->akun_id = 14;
+            $kas->user_id = auth()->user()->id;
+            $kas->tgl = $tgl->format('Y-m-d H:i:s');
+            $kas->created_at = $tgl->format('Y-m-d H:i:s');
+            $transaksi->transaksi_kas()->save($kas);
+
 
             $bank = Bank::where('id', $request->bank)->first();
             $bank->logo = 'http://192.168.1.3/bumaba/public/'. $bank->logo;
@@ -206,6 +213,7 @@ class PaymentController extends Controller
                 'error' => $e,
             ]);
         }
+
         DB::commit();
         return response()->json([
             'fail' => false,

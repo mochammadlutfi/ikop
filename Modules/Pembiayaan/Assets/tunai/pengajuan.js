@@ -59,10 +59,10 @@ jQuery(function() {
 
                 modal.find('.modal-footer').append(`
                 <button type="button" class="btn btn-danger btn-sm btn-action" data-val="3" data-id="${response.id}">
-                <i class="si si-close mr-2"></i> Tolak
+                    <i class="si si-close mr-2"></i> Tolak
                 </button>
                 <button type="button" class="btn btn-success btn-sm btn-action" data-val="1" data-id="${response.id}">
-                    <i class="si si-check mr-2"></i> Terima
+                    <i class="si si-check mr-2"></i> Konfirmasi
                 </button>
                 `);
 

@@ -21,6 +21,13 @@ Route::post('/login','API\AuthController@login');
 Route::middleware('auth:api')->namespace('API')->group(function() {
     Route::post('/setup-pin','AuthController@setup_pin');
     Route::post('/access','AuthController@pin_access');
+
+    Route::get('/slider','SliderController@index');
+
+    Route::prefix('anggota')->group(function() {
+        Route::get('/','AnggotaController@detail');
+        // Route::get('/detail/{id}','TransaksiController@detail');
+    });
     
     Route::prefix('simpanan')->group(function() {
         Route::get('/','SimpananController@index');
@@ -53,6 +60,7 @@ Route::middleware('auth:api')->namespace('API')->group(function() {
         Route::get('/','SukarelaController@saldo');
         Route::get('/riwayat','SukarelaController@riwayat');
         Route::post('/topup','SukarelaController@topup');
+        Route::post('/transfer','SukarelaController@transfer');
         Route::post('/confirm','SukarelaController@confirm');
     });
 
@@ -64,7 +72,8 @@ Route::middleware('auth:api')->namespace('API')->group(function() {
 
     Route::prefix('ppob')->group(function() {
         Route::get('/','PPOBController@index');
-        // Route::get('/detail/{id}','TransaksiController@detail');
+        Route::post('/payment','PPOBController@payment');
+        Route::post('/cek-tagihan','PPOBController@cekTagihan');
     });
 
 });

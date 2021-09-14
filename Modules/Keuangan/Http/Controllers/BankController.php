@@ -4,7 +4,7 @@ namespace Modules\Keuangan\Http\Controllers;
 
 
 
-use Modules\Bank\Entities\Bank;
+use Modules\Keuangan\Entities\Bank;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;

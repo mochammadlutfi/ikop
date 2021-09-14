@@ -3,6 +3,7 @@
 namespace Modules\Keuangan\Http\Controllers;
 
 use Modules\Keuangan\Entities\Pembayaran;
+use Modules\Keuangan\Entities\Transaksi;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -32,7 +33,17 @@ class PembayaranController extends Controller
 
         if ($request->ajax()) {
             $keyword  = $request->keyword;
-            $data = Kas::where('nama', 'like', '%' . $keyword . '%')
+            if($request->status == 'aktif'){
+                $status = array('draft', 'pending');
+            }else{
+                $status = array('confirm', 'cancel');
+            }
+
+            $data = Pembayaran::select('transaksi_bayar.*', 'b.nama as anggota_nama', 'b.anggota_id', 'a.nomor', 'c.logo as bank_logo')
+            ->leftJoin('transaksi as a', 'a.id','transaksi_bayar.transaksi_id')
+            ->leftJoin('anggota as b', 'b.anggota_id','a.anggota_id')
+            ->leftJoin('bank as c', 'c.id','transaksi_bayar.bank_id')
+            ->whereIn('transaksi_bayar.status', $status)
             ->orderBy('created_at', 'DESC')->paginate(20);
 
             return response()->json($data);
@@ -45,9 +56,17 @@ class PembayaranController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function detail($id, Request $request)
     {
-        return view('keuangan::kas.create');
+        if ($request->ajax()) {
+            $data = Pembayaran::select('transaksi_bayar.*', 'b.nama as anggota_nama', 'b.anggota_id', 'a.nomor', 'c.logo as bank_logo')
+            ->leftJoin('transaksi as a', 'a.id','transaksi_bayar.transaksi_id')
+            ->leftJoin('anggota as b', 'b.anggota_id','a.anggota_id')
+            ->leftJoin('bank as c', 'c.id','transaksi_bayar.bank_id')
+            ->where('transaksi_bayar.id', $id)->firstorfail();
+
+            return response()->json($data);
+        }
     }
 
     /**
@@ -55,22 +74,16 @@ class PembayaranController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function action(Request $request)
     {
         $rules = [
-            'nama' => 'required',
-            'simpanan' => 'required',
-            'transfer' => 'required',
-            'pengeluaran' => 'required',
+            'id' => 'required',
             'status' => 'required',
         ];
 
         $pesan = [
-            'nama.required' => 'Nama Kas Wajib Diisi!',
-            'simpanan.required' => 'Simpanan Kas Wajib Diisi!',
-            'transfer.required' => 'Tranfer Kas Wajib Diisi!',
-            'pengeluaran.required' => 'Pengeluaran Kas Wajib Diisi!',
-            'status.required' => 'Status Kas Wajib Diisi!',
+            'id.required' => 'Nama Kas Wajib Diisi!',
+            'status.required' => 'Simpanan Kas Wajib Diisi!',
         ];
 
         $validator = Validator::make($request->all(), $rules, $pesan);
@@ -83,13 +96,14 @@ class PembayaranController extends Controller
             DB::beginTransaction();
             try{
 
-                $data = new Kas();
-                $data->nama = $request->nama;
-                $data->simpanan = $request->simpanan;
-                $data->pengeluaran = $request->pengeluaran;
-                $data->transfer = $request->transfer;
+                $data = Pembayaran::where('id', $request->id)->first();
                 $data->status = $request->status;
                 $data->save();
+
+                $transaksi = Transaksi::where('id', $data->transaksi_id)->first();
+                $transaksi->status = $request->status == 'confirm' ? 1 : 0;
+                $transaksi->teller_id = auth()->guard('admin')->user()->id;
+                $transaksi->save();
 
             }catch(\QueryException $e){
                 DB::rollback();

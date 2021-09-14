@@ -23,16 +23,11 @@
     </li>
 
     
-    <li class="{{ Request::is('pembayaran/*', 'pembayaran') ? 'open' : null }}">
-        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-money"></i><span class="sidebar-mini-hide">Pembayaran</span></a>
-        <ul>
-            <li>
-                <a class="{{ Request::is('pembayaran') ? 'active' : null }}" href="{{ route('pembayaran') }}">Pembayaran Aktif</a>
-            </li>
-            <li>
-                <a class="{{ Request::is('pembayaran/selesai') ? 'active' : null }}" href="{{ route('pembayaran.selesai') }}">Pembayaran Selesai</a>
-            </li>
-        </ul>
+    <li>
+        <a class="{{ Request::is('pembayaran/*', 'pembayaran') ? 'active' : null }}" href="{{ route('pembayaran') }}">
+            <i class="fa fa-cash-register"></i>
+            Pembayaran
+        </a>
     </li>
 
     
@@ -149,6 +144,11 @@
                 </ul>
             </li>
         </ul>
+    </li>
+    <li>
+        <a class="{{ Request::is('slider', 'slider/*') ? 'active' : null }}" href="{{ route('slider') }}">
+            <i class="si si-picture"></i>Slider</span>
+        </a>
     </li>
     <li class="{{ Request::is('laporan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-printer"></i><span class="sidebar-mini-hide">Laporan</span></a>
