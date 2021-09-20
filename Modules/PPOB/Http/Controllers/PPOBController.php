@@ -6,15 +6,29 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
+ 
+use Modules\Keuangan\Entities\Transaksi;
+use Modules\PPOB\Entities\TransaksiPPOB;
+
 class PPOBController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('ppob::index');
+        $note = $request->all();
+        $data = $note["data"];
+        if($data["rc"] == "00"){
+            $ppob = TransaksiPPOB::where('ref_id', $data["ref_id"])->first();
+            $ppob->sn = $data["sn"];
+            $ppob->save();
+
+            $transaksi = Transaksi::where("id", $ppob->transaksi_id)->first();
+            $transaksi->status = 1;
+            $transaksi->save();
+        }
     }
 
     /**

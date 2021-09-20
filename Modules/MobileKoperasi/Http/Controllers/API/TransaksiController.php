@@ -32,28 +32,22 @@ class TransaksiController extends Controller
 
         $anggota_id = $request->user()->anggota_id;
         if($request->status == 'aktif'){
-            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl')
+            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl', 'transaksi.status')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'status', 'jumlah']);
                 $q->with(['bank:id,logo']);
             }])
-            ->whereHas('pembayaran', function($q){
-                $q->where('status', 'pending');
-                $q->orWhere('status', 'draft');
-            })
+            ->where('transaksi.status', 0)
             ->where('transaksi.anggota_id', $anggota_id)
             ->orderBy('transaksi.tgl', 'DESC')
             ->paginate(15);
         }else{
-            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl')
+            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl', 'transaksi.status')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'status', 'jumlah']);
                 $q->with(['bank:id,logo']);
             }])
-            ->whereHas('pembayaran', function($q){
-                $q->where('status', 'confirm');
-                $q->orWhere('status', 'cancel');
-            })
+            ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
             ->orderBy('transaksi.tgl', 'DESC')
             ->paginate(15);
@@ -64,15 +58,18 @@ class TransaksiController extends Controller
             $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
             $data->total = (int)$data->total;
             $data->tgl = Date::parse($data->tgl)->format('d F Y');
-
-            if($data->pembayaran->status === 'pending'){
-                $data->pembayaran->status = 'Menunggu Pembayaran';
-            }else if($data->pembayaran->status === 'draft'){
-                $data->pembayaran->status = 'Verifikasi';
-            }else if($data->pembayaran->status === 'confirm'){
-                $data->pembayaran->status = 'Berhasil';
+            if($data->pembayaran->method == 'Simpanan Sukarela' && $data->status == 0){
+                $data->pembayaran->status = 'Diproses';
             }else{
-                $data->pembayaran->status = 'Dibatalkan';
+                if($data->pembayaran->status === 'pending'){
+                    $data->pembayaran->status = 'Menunggu Pembayaran';
+                }else if($data->pembayaran->status === 'draft'){
+                    $data->pembayaran->status = 'Verifikasi';
+                }else if($data->pembayaran->status === 'confirm'){
+                    $data->pembayaran->status = 'Berhasil';
+                }else{
+                    $data->pembayaran->status = 'Dibatalkan';
+                }
             }
         });
 
@@ -86,16 +83,15 @@ class TransaksiController extends Controller
         with(['pembayaran' => function($q){
             $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'jumlah']);
             $q->with(['bank:id,logo']);
-        }])
+        }, 'ppob'])
         ->where('transaksi.id', $id)
         ->first();
-        // dd($data);
 
         $data->total = (int)$data->total;
         $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
         $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
         if($data->pembayaran->bank !== null){
-            $data->pembayaran->bank->logo = 'http://192.168.1.3/bumaba/public/'. $data->pembayaran->bank->logo;
+            $data->pembayaran->bank->logo = 'http://192.168.1.2/bumaba/public/'. $data->pembayaran->bank->logo;
         }
         $data->item = json_decode($data->item);
 

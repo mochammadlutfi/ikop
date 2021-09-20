@@ -30,7 +30,7 @@ class PaymentController extends Controller
 
         $data = Bank::latest()->get();
         $data->each(function ($d) {
-            $d->logo = 'http://192.168.1.3/bumaba/public/'.$d->logo;
+            $d->logo = 'http://192.168.1.2/bumaba/public/'.$d->logo;
         });
         return response()->json([
             'data' => $data,
@@ -79,7 +79,7 @@ class PaymentController extends Controller
                 $q->where('transaksi.id', $id);
             })->first();
             
-            $data->bank->logo = 'http://192.168.1.3/bumaba/public/'. $data->bank->logo;
+            $data->bank->logo = 'http://192.168.1.2/bumaba/public/'. $data->bank->logo;
             $data->jumlah = (int)$data->jumlah;
             $data->admin_fee = (int)$data->admin_fee;
 
@@ -116,11 +116,11 @@ class PaymentController extends Controller
                 'errors' => $validator->errors()
             ]);
         }else{
-            $coba = '';
-            $someArray = ["01-06-2021","01-07-2021"];
-            foreach($someArray as $tagihan){
-                $coba .= ' - '. $tagihan;
-            }
+            // $coba = '';
+            // $someArray = $request->tagihan_id;
+            // foreach($someArray as $tagihan){
+            //     $coba .= ' - '. $tagihan;
+            // }
             if($request->slug == 'simla'){
                 $response =  $this->sukarela($request);
             }elseif($request->slug == 'wajib'){
@@ -188,7 +188,7 @@ class PaymentController extends Controller
 
 
             $bank = Bank::where('id', $request->bank)->first();
-            $bank->logo = 'http://192.168.1.3/bumaba/public/'. $bank->logo;
+            $bank->logo = 'http://192.168.1.2/bumaba/public/'. $bank->logo;
 
             $response = collect([
                 'id' => $payment->id,
@@ -261,8 +261,6 @@ class PaymentController extends Controller
                 $pay_wajib->jumlah = 100000;
                 $transaksi->simkop()->save($pay_wajib);
             }
-            // dd($pay_wajib);
-            
 
             $payment = new TransaksiBayar();
             $payment->transaksi_id = $nomor;
@@ -275,7 +273,7 @@ class PaymentController extends Controller
             $transaksi->pembayaran()->save($payment);
 
             $bank = Bank::where('id', $request->bank)->first();
-            $bank->logo = 'http://192.168.1.3/bumaba/public/'. $bank->logo;
+            $bank->logo = 'http://192.168.1.2/bumaba/public/'. $bank->logo;
 
             $response = collect([
                 'id' => $payment->id,

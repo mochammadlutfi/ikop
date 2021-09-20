@@ -4,6 +4,7 @@ namespace Barryvdh\Debugbar\DataCollector;
 
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\TimeDataCollector;
+use Illuminate\Support\Str;
 
 /**
  * Collects data about SQL statements executed with PDO
@@ -15,6 +16,7 @@ class QueryCollector extends PDOCollector
     protected $renderSqlWithParams = false;
     protected $findSource = false;
     protected $middleware = [];
+    protected $durationBackground = true;
     protected $explainQuery = false;
     protected $explainTypes = ['SELECT']; // ['SELECT', 'INSERT', 'UPDATE', 'DELETE']; for MySQL 5.6.3+
     protected $showHints = false;
@@ -86,6 +88,16 @@ class QueryCollector extends PDOCollector
     public function mergeBacktraceExcludePaths(array $excludePaths)
     {
         $this->backtraceExcludePaths = array_merge($this->backtraceExcludePaths, $excludePaths);
+    }
+
+    /**
+     * Enable/disable the shaded duration background on queries
+     *
+     * @param  bool $enabled
+     */
+    public function setDurationBackground($enabled)
+    {
+        $this->durationBackground = $enabled;
     }
 
     /**
@@ -178,7 +190,7 @@ class QueryCollector extends PDOCollector
         ];
 
         if ($this->timeCollector !== null) {
-            $this->timeCollector->addMeasure($query, $startTime, $endTime);
+            $this->timeCollector->addMeasure(Str::limit($query, 100), $startTime, $endTime);
         }
     }
 
@@ -207,7 +219,7 @@ class QueryCollector extends PDOCollector
      * @version $Id$
      * @access public
      * @param string $query
-     * @return string
+     * @return string[]
      */
     protected function performQueryAnalysis($query)
     {
@@ -480,7 +492,7 @@ class QueryCollector extends PDOCollector
                 'connection' => $query['connection'],
             ];
 
-            //Add the results from the explain as new rows
+            // Add the results from the explain as new rows
             foreach ($query['explain'] as $explain) {
                 $statements[] = [
                     'sql' => " - EXPLAIN # {$explain->id}: `{$explain->table}` ({$explain->select_type})",
@@ -492,8 +504,30 @@ class QueryCollector extends PDOCollector
             }
         }
 
+        if ($this->durationBackground) {
+            if ($totalTime > 0) {
+                // For showing background measure on Queries tab
+                $start_percent = 0;
+
+                foreach ($statements as $i => $statement) {
+                    if (!isset($statement['duration'])) {
+                        continue;
+                    }
+
+                    $width_percent = $statement['duration'] / $totalTime * 100;
+
+                    $statements[$i] = array_merge($statement, [
+                        'start_percent' => round($start_percent, 3),
+                        'width_percent' => round($width_percent, 3),
+                    ]);
+
+                    $start_percent += $width_percent;
+                }
+            }
+        }
+
         $nb_statements = array_filter($queries, function ($query) {
-            return $query['type'] == 'query';
+            return $query['type'] === 'query';
         });
 
         $data = [

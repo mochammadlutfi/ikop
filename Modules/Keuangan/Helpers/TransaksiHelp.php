@@ -12,16 +12,12 @@ use Modules\PPOB\Entities\TransaksiPPOB;
  * @return Renderable
  */
 if(!function_exists('get_ppob_code')){
-    function get_ppob_code($type){
+    function get_ppob_code(){
         $date = Date::now()->format('Y-m-d');
         $q = TransaksiPPOB::select(DB::raw('MAX(code) AS kd_max'))->whereDate('created_at', $date);
         
         date_default_timezone_set('Asia/Jakarta');
-        if($type === 'pulsa'){
-            $code = 'BP/';
-        }else if($type === 'data'){
-            $code = 'BD/';
-        }
+        $code = 'PB/';
         if($q->count() > 0){
             foreach($q->get() as $k){
                 return $code. Date::now()->format('ymd') .'/'. sprintf("%05s", abs(((int)$k->kd_max) + 1));

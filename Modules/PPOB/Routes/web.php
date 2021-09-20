@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Http;
 |
 */
 
+Route::post('ppob/callback', 'PPOBController@index')->name('ppob.calback');
+
 Route::prefix('ppob')->group(function() {
     // $body['commands'] = "pricelist";
     // $body['username'] = "089656466525";

@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+## [5.23.0] - 2021-08-26
+### Added
+* Added `screenName` property to the provider data of a user record
+  ([#575](https://github.com/kreait/firebase-php/pull/575))
+* Added support for deleting multiple users at once
+  (based on [#650](https://github.com/kreait/firebase-php/pull/650))
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/user-management.html#delete-multiple-users))
+### Changed
+* Bumped `google/auth` dependency `^1.18` in order to ensure support for `guzzle/psr ^2.0`
+  (see [google/auth#357](https://github.com/googleapis/google-auth-library-php/pull/357))
+
+## [5.22.0] - 2021-07-31
+### Added
+* Added support for Realtime Database Auth Variable Overrides
+  ([#625](https://github.com/kreait/firebase-php/pull/625))
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/realtime-database.html#authenticate-with-limited-privileges))
+* Added support for linking IdP credentials to an existing account
+  ([#635](https://github.com/kreait/firebase-php/pull/635))
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/authentication.html#linking-and-unlinking-idp))
+### Changes
+* Database Rules are now uploaded as pretty printed JSON to improve readability when viewing
+  them in the Firebase Console.
+### Notes
+* Remote Config templates now support up to 3000 parameters (instead of up to 2000 parameters)
+
+## [5.21.0] - 2021-07-16
+### Added
+* Added support for Session Cookie Generation
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/authentication.html#session-cookies))
+
+### Changes
+* Bumped `kreait/firebase-tokens` to `^1.16`
+* Updated version constraints of `psr/cache` to allow newer releases
+* Updated version constraints of `psr/log` to allow newer releases
+
 ## [5.20.1] - 2021-05-12
 ### Fixed
 * Restored broken support for Guzzle 6.x
@@ -257,7 +292,10 @@ to upgrade from a 4.x release to 5.0 without changes to your code.**
 * Support for PHP `<7.2`
 * Deprecated methods and classes
 
-[Unreleased]: https://github.com/kreait/firebase-php/compare/5.20.1...HEAD
+[Unreleased]: https://github.com/kreait/firebase-php/compare/5.23.0...HEAD
+[5.23.0]: https://github.com/kreait/firebase-php/compare/5.22.0...5.23.0
+[5.22.0]: https://github.com/kreait/firebase-php/compare/5.21.0...5.22.0
+[5.21.0]: https://github.com/kreait/firebase-php/compare/5.20.1...5.21.0
 [5.20.1]: https://github.com/kreait/firebase-php/compare/5.20.0...5.20.1
 [5.20.0]: https://github.com/kreait/firebase-php/compare/5.19.0...5.20.0
 [5.19.0]: https://github.com/kreait/firebase-php/compare/5.18.0...5.19.0

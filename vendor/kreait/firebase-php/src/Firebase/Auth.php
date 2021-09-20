@@ -12,6 +12,9 @@ use Kreait\Firebase\Auth\ActionCodeSettings;
 use Kreait\Firebase\Auth\ActionCodeSettings\ValidatedActionCodeSettings;
 use Kreait\Firebase\Auth\ApiClient;
 use Kreait\Firebase\Auth\CreateActionLink;
+use Kreait\Firebase\Auth\CreateSessionCookie;
+use Kreait\Firebase\Auth\DeleteUsersRequest;
+use Kreait\Firebase\Auth\DeleteUsersResult;
 use Kreait\Firebase\Auth\IdTokenVerifier;
 use Kreait\Firebase\Auth\SendActionLink;
 use Kreait\Firebase\Auth\SendActionLink\FailedToSendActionLink;
@@ -26,9 +29,11 @@ use Kreait\Firebase\Auth\SignInWithIdpCredentials;
 use Kreait\Firebase\Auth\SignInWithRefreshToken;
 use Kreait\Firebase\Auth\TenantId;
 use Kreait\Firebase\Auth\UserRecord;
+use Kreait\Firebase\Exception\Auth\AuthError;
 use Kreait\Firebase\Exception\Auth\RevokedIdToken;
 use Kreait\Firebase\Exception\Auth\UserNotFound;
 use Kreait\Firebase\Exception\InvalidArgumentException;
+use Kreait\Firebase\Project\ProjectId;
 use Kreait\Firebase\Util\Deprecation;
 use Kreait\Firebase\Util\DT;
 use Kreait\Firebase\Util\JSON;
@@ -47,39 +52,32 @@ use Traversable;
 class Auth implements Contract\Auth
 {
     private ApiClient $client;
-
     private ClientInterface $httpClient;
-
     private TokenGenerator $tokenGenerator;
-
     private Verifier $idTokenVerifier;
-
     private SignInHandler $signInHandler;
-
-    private ?TenantId $tenantId = null;
+    private ?TenantId $tenantId;
+    private ?ProjectId $projectId;
 
     /**
-     * @param iterable<ApiClient|ClientInterface|TokenGenerator|Verifier|SignInHandler|TenantId|null>|ApiClient|ClientInterface|TokenGenerator|Verifier|SignInHandler|TenantId|null ...$x
-     *
      * @internal
      */
-    public function __construct(...$x)
-    {
-        foreach ($x as $arg) {
-            if ($arg instanceof ApiClient) {
-                $this->client = $arg;
-            } elseif ($arg instanceof TokenGenerator) {
-                $this->tokenGenerator = $arg;
-            } elseif ($arg instanceof Verifier) {
-                $this->idTokenVerifier = $arg;
-            } elseif ($arg instanceof SignInHandler) {
-                $this->signInHandler = $arg;
-            } elseif ($arg instanceof TenantId) {
-                $this->tenantId = $arg;
-            } elseif ($arg instanceof ClientInterface) {
-                $this->httpClient = $arg;
-            }
-        }
+    public function __construct(
+        ApiClient $apiClient,
+        ClientInterface $httpClient,
+        TokenGenerator $tokenGenerator,
+        Verifier $idTokenVerifier,
+        SignInHandler $signInHandler,
+        ?TenantId $tenantId = null,
+        ?ProjectId $projectId = null
+    ) {
+        $this->client = $apiClient;
+        $this->httpClient = $httpClient;
+        $this->tokenGenerator = $tokenGenerator;
+        $this->idTokenVerifier = $idTokenVerifier;
+        $this->signInHandler = $signInHandler;
+        $this->tenantId = $tenantId;
+        $this->projectId = $projectId;
     }
 
     public function getUser($uid): UserRecord
@@ -233,6 +231,24 @@ class Auth implements Contract\Auth
         } catch (UserNotFound $e) {
             throw new UserNotFound("No user with uid '{$uid}' found.");
         }
+    }
+
+    public function deleteUsers(iterable $uids, bool $forceDeleteEnabledUsers = false): DeleteUsersResult
+    {
+        if (!$this->projectId) {
+            throw AuthError::missingProjectId('Batch user deletion cannot be performed.');
+        }
+
+        $request = DeleteUsersRequest::withUids($this->projectId->value(), $uids, $forceDeleteEnabledUsers);
+
+        $response = $this->client->deleteUsers(
+            $request->projectId(),
+            $request->uids(),
+            $request->enabledUsersShouldBeForceDeleted(),
+            $this->tenantId ? $this->tenantId->toString() : null
+        );
+
+        return DeleteUsersResult::fromRequestAndResponse($request, $response);
     }
 
     public function getEmailActionLink(string $type, $email, $actionCodeSettings = null): string
@@ -568,22 +584,22 @@ class Auth implements Contract\Auth
         throw new FailedToSignIn('Failed to sign in anonymously: No ID token or UID available');
     }
 
-    public function signInWithTwitterOauthCredential(string $accessToken, string $oauthTokenSecret, ?string $redirectUrl = null): SignInResult
+    public function signInWithTwitterOauthCredential(string $accessToken, string $oauthTokenSecret, ?string $redirectUrl = null, ?string $linkingIdToken = null): SignInResult
     {
-        return $this->signInWithIdpAccessToken(Provider::TWITTER, $accessToken, $redirectUrl, $oauthTokenSecret);
+        return $this->signInWithIdpAccessToken(Provider::TWITTER, $accessToken, $redirectUrl, $oauthTokenSecret, $linkingIdToken);
     }
 
-    public function signInWithGoogleIdToken(string $idToken, ?string $redirectUrl = null): SignInResult
+    public function signInWithGoogleIdToken(string $idToken, ?string $redirectUrl = null, ?string $linkingIdToken = null): SignInResult
     {
-        return $this->signInWithIdpIdToken(Provider::GOOGLE, $idToken, $redirectUrl);
+        return $this->signInWithIdpIdToken(Provider::GOOGLE, $idToken, $redirectUrl, $linkingIdToken);
     }
 
-    public function signInWithFacebookAccessToken(string $accessToken, ?string $redirectUrl = null): SignInResult
+    public function signInWithFacebookAccessToken(string $accessToken, ?string $redirectUrl = null, ?string $linkingIdToken = null): SignInResult
     {
-        return $this->signInWithIdpAccessToken(Provider::FACEBOOK, $accessToken, $redirectUrl);
+        return $this->signInWithIdpAccessToken(Provider::FACEBOOK, $accessToken, $redirectUrl, null, $linkingIdToken);
     }
 
-    public function signInWithIdpAccessToken($provider, string $accessToken, $redirectUrl = null, ?string $oauthTokenSecret = null): SignInResult
+    public function signInWithIdpAccessToken($provider, string $accessToken, $redirectUrl = null, ?string $oauthTokenSecret = null, ?string $linkingIdToken = null): SignInResult
     {
         $provider = $provider instanceof Provider ? (string) $provider : $provider;
         $redirectUrl = $redirectUrl ?? 'http://localhost';
@@ -598,6 +614,10 @@ class Auth implements Contract\Auth
             $action = SignInWithIdpCredentials::withAccessToken($provider, $accessToken);
         }
 
+        if ($linkingIdToken) {
+            $action = $action->withLinkingIdToken($linkingIdToken);
+        }
+
         if ($redirectUrl) {
             $action = $action->withRequestUri($redirectUrl);
         }
@@ -609,7 +629,7 @@ class Auth implements Contract\Auth
         return $this->signInHandler->handle($action);
     }
 
-    public function signInWithIdpIdToken($provider, $idToken, $redirectUrl = null): SignInResult
+    public function signInWithIdpIdToken($provider, $idToken, $redirectUrl = null, ?string $linkingIdToken = null): SignInResult
     {
         $provider = $provider instanceof Provider ? (string) $provider : $provider;
 
@@ -625,6 +645,10 @@ class Auth implements Contract\Auth
 
         $action = SignInWithIdpCredentials::withIdToken($provider, $idToken);
 
+        if ($linkingIdToken) {
+            $action = $action->withLinkingIdToken($linkingIdToken);
+        }
+
         if ($redirectUrl) {
             $action = $action->withRequestUri($redirectUrl);
         }
@@ -634,6 +658,13 @@ class Auth implements Contract\Auth
         }
 
         return $this->signInHandler->handle($action);
+    }
+
+    public function createSessionCookie($idToken, $ttl): string
+    {
+        return (new CreateSessionCookie\GuzzleApiClientHandler($this->httpClient))
+            ->handle(CreateSessionCookie::forIdToken($idToken, $ttl))
+        ;
     }
 
     /**

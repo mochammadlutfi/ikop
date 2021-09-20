@@ -15,6 +15,7 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "iak-id/iak-api-php": "^1.0",
         "jenssegers/date": "^4.0",
         "kalnoy/nestedset": "^6.0",
         "kreait/laravel-firebase": "^3.1",

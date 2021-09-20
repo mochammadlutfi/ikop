@@ -10,7 +10,7 @@ class TransaksiBayar extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'transaksi_id', 'bank_id', 'program', 'amount', 'code', 'status'
+        'transaksi_id', 'bank_id', 'program', 'amount', 'code', 'status', 'method'
     ];
 
 
@@ -24,6 +24,17 @@ class TransaksiBayar extends Model
     {
         return $this->belongsTo('Modules\Keuangan\Entities\Bank');
     }
+
+
+    public function getMethodAttribute($value)
+    {
+        if($value == 'simla'){
+            return 'Simpanan Sukarela';
+        }else{
+            return $value;
+        }
+    }
+
 
 
 

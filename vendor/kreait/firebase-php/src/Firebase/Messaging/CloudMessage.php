@@ -53,11 +53,11 @@ final class CloudMessage implements Message
      *     android?: array{
      *         collapse_key?: string,
      *         priority?: 'normal'|'high',
-     *         ttl?: int|double,
+     *         ttl?: string,
      *         restricted_package_name?: string,
      *         data?: array<string, string>,
-     *         notification?: array,
-     *         fcm_options?: array,
+     *         notification?: array<string, string>,
+     *         fcm_options?: array<string, mixed>,
      *         direct_boot_ok?: bool
      *     },
      *     apns?: ApnsConfig|array{
@@ -175,11 +175,11 @@ final class CloudMessage implements Message
      * @param AndroidConfig|array{
      *     collapse_key?: string,
      *     priority?: 'normal'|'high',
-     *     ttl?: int|double,
+     *     ttl?: string,
      *     restricted_package_name?: string,
      *     data?: array<string, string>,
-     *     notification?: array,
-     *     fcm_options?: array,
+     *     notification?: array<string, string>,
+     *     fcm_options?: array<string, mixed>,
      *     direct_boot_ok?: bool
      * } $config
      *

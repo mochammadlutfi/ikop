@@ -12,8 +12,8 @@ use Kreait\Firebase\Exception\Auth\OperationNotAllowed;
 use Kreait\Firebase\Exception\Auth\UserDisabled;
 use Kreait\Firebase\Exception\AuthApiExceptionConverter;
 use Kreait\Firebase\Exception\AuthException;
-use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Request;
+use Kreait\Firebase\Util\JSON;
 use Kreait\Firebase\Value\Provider;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -40,7 +40,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function createUser(Request\CreateUser $request): ResponseInterface
     {
@@ -49,7 +48,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function updateUser(Request\UpdateUser $request): ResponseInterface
     {
@@ -60,13 +58,12 @@ class ApiClient
      * @param array<string, mixed> $claims
      *
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function setCustomUserClaims(string $uid, array $claims): ResponseInterface
     {
         return $this->requestApi('https://identitytoolkit.googleapis.com/v1/accounts:update', [
             'localId' => $uid,
-            'customAttributes' => \json_encode((object) $claims),
+            'customAttributes' => JSON::encode($claims, JSON_FORCE_OBJECT),
         ]);
     }
 
@@ -75,7 +72,6 @@ class ApiClient
      *
      * @throws EmailNotFound
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function getUserByEmail(string $email): ResponseInterface
     {
@@ -86,7 +82,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function getUserByPhoneNumber(string $phoneNumber): ResponseInterface
     {
@@ -97,7 +92,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function downloadAccount(?int $batchSize = null, ?string $nextPageToken = null): ResponseInterface
     {
@@ -111,7 +105,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function deleteUser(string $uid): ResponseInterface
     {
@@ -121,10 +114,31 @@ class ApiClient
     }
 
     /**
+     * @param string[] $uids
+     *
+     * @throws AuthException
+     */
+    public function deleteUsers(string $projectId, array $uids, bool $forceDeleteEnabledUsers, ?string $tenantId = null): ResponseInterface
+    {
+        $data = [
+            'localIds' => $uids,
+            'force' => $forceDeleteEnabledUsers,
+        ];
+
+        if ($tenantId) {
+            $data['tenantId'] = $tenantId;
+        }
+
+        return $this->requestApi(
+            "https://identitytoolkit.googleapis.com/v1/projects/{$projectId}/accounts:batchDelete",
+            $data
+        );
+    }
+
+    /**
      * @param string|array<string> $uids
      *
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function getAccountInfo($uids): ResponseInterface
     {
@@ -142,7 +156,6 @@ class ApiClient
      * @throws InvalidOobCode
      * @throws OperationNotAllowed
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function verifyPasswordResetCode(string $oobCode): ResponseInterface
     {
@@ -157,7 +170,6 @@ class ApiClient
      * @throws OperationNotAllowed
      * @throws UserDisabled
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function confirmPasswordReset(string $oobCode, string $newPassword): ResponseInterface
     {
@@ -169,7 +181,6 @@ class ApiClient
 
     /**
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function revokeRefreshTokens(string $uid): ResponseInterface
     {
@@ -183,7 +194,6 @@ class ApiClient
      * @param array<int, string|Provider> $providers
      *
      * @throws AuthException
-     * @throws FirebaseException
      */
     public function unlinkProvider(string $uid, array $providers): ResponseInterface
     {
@@ -197,14 +207,15 @@ class ApiClient
      * @param array<mixed> $data
      *
      * @throws AuthException
-     * @throws FirebaseException
      */
     private function requestApi(string $uri, array $data): ResponseInterface
     {
         $options = [];
+        $tenantId = $data['tenantId'] ?? $this->tenantId ?? null;
+        $tenantId = $tenantId instanceof TenantId ? $tenantId->toString() : $tenantId;
 
-        if ($this->tenantId) {
-            $data['tenantId'] = $this->tenantId->toString();
+        if ($tenantId) {
+            $data['tenantId'] = $tenantId;
         }
 
         if (!empty($data)) {

@@ -74,6 +74,7 @@ Route::middleware('auth:api')->namespace('API')->group(function() {
         Route::get('/','PPOBController@index');
         Route::post('/payment','PPOBController@payment');
         Route::post('/cek-tagihan','PPOBController@cekTagihan');
+        Route::post('/cek-pln','PPOBController@cekPLN');
     });
 
 });
