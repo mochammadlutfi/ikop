@@ -29,6 +29,7 @@
                     <form id="form-simla" method="POST" onsubmit="return false;" autocomplete="on">
                         @csrf
                         <input type="hidden" name="jenis" value="setoran">
+                        <input type="hidden" id="method" value="store">
                         <h2 class="content-heading pt-0">Informasi Anggota</h2>
                         <div class="row">
                             <div class="col-md-6">
@@ -69,11 +70,6 @@
                                     <input type="text" id="field-tgl" class="form-control" name="tgl" autocomplete="off" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                                     <span id="error-tgl" class="invalid-feedback"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label for="field-kas_id">Kas</label>
-                                    <select class="form-control" name="kas_id" id="field-kas_id"></select>
-                                    <span id="error-kas_id" class="invalid-feedback"></span>
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -83,7 +79,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Keterangan (Optional)</label>
-                                    <textarea class="form-control" name="keterangan" rows="5" placeholder="Masukan Keterangan (Jika Ada)"></textarea>
+                                    <input type="text" class="form-control" name="keterangan" id="field-keterangan" placeholder="Masukan Keterangan (Jika Ada)">
                                 </div>
                             </div>
                         </div>

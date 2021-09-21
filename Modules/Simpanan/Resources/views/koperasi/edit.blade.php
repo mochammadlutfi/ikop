@@ -16,7 +16,7 @@
         <div class="block-content pb-15">
             <form id="form-setor" onsubmit="return false">
                 @csrf
-                <input type="hidden" name="id" value="{{ $data->no_transaksi }}">
+                <input type="hidden" name="id" value="{{ $data->id }}">
                 <input type="hidden" id="method" value="update">
                 <h2 class="content-heading pt-0">Informasi Anggota</h2>
                 <div class="row">
@@ -86,27 +86,37 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($data->line as $item)
                                 <tr>
-                                    <td>Simpanan Wajib</td>
+                                    <td>{{ $item->keterangan }}</td>
                                     <td>
-                                        Rp <span class="display_currency">100000</span>
+                                        @if($item->akun_id == 9)
+                                            <input type="text" class="form-control input-currency" id="field-jml_sosial" name="jml_sosial" value="{{ $item->jumlah }}">
+                                            <span id="error-sosial" class="invalid-feedback"></span>
+                                        @else
+                                            <span class="currency">{{ (int)$item->jumlah }}</span>
+                                        @endif
                                     </td>
                                 </tr>
+                                @endforeach
+                                @if($data->line->count() > 1)
                                 <tr>
                                     <td>Simpanan Sosial</td>
                                     <td>
-                                        <input type="number" class="form-control jml_sosial" id="field-jml_bayar" name="jml_sosial" value="5000">
+                                        <input type="text" class="form-control input-currency" id="field-jml_sosial" name="jml_sosial" value="5000">
                                         <span id="error-sosial" class="invalid-feedback"></span>
                                     </td>
                                 </tr>
+                                @endif
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th width="30%">TOTAL SETORAN</th>
-                                    <th>
-                                        <input type="hidden" id="input_total_setoran" name="total" value="105000">
-                                        <div id="display_total_setoran">RP <span id="total_simpanan" class="display_currency">105000</span></div>
-                                    </th>
+                                    <tr>
+                                        <th width="30%">TOTAL SETORAN</th>
+                                        <th>
+                                            <input type="text" class="form-control input-currency" readonly id="field-total" name="total" value="{{ $data->total }}">
+                                        </th>
+                                    </tr>
                                 </tr>
                             </tfoot>
                         </table>

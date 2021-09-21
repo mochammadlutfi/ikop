@@ -68,7 +68,6 @@ jQuery(function() {
     if($('#method').val() == 'update'){
         anggota_opt = new Option($('#field-anggota_id').data("text"), $('#field-anggota_id').data("id"), true, true);
         anggota.append(anggota_opt).trigger('change');
-
         
         kas_opt = new Option($('#field-kas_id').data("text"), $('#field-kas_id').data("id"), true, true);
         kas.append(kas_opt).trigger('change');

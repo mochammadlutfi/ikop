@@ -27,7 +27,7 @@ class Transaksi extends Model
 
     public function simkop()
     {
-        return $this->hasMany('Modules\Simpanan\Entities\SimkopTransaksi');
+        return $this->hasOne('Modules\Simpanan\Entities\SimkopTransaksi');
     }
 
     public function simla()
@@ -47,9 +47,9 @@ class Transaksi extends Model
         ]);
     }
 
-    public function transaksi_kas()
+    public function line()
     {
-        return $this->hasMany('Modules\Keuangan\Entities\TransaksiKas');
+        return $this->hasMany('Modules\Keuangan\Entities\TransaksiLine');
     }
 
     public function getJenisTransaksiAttribute($value)

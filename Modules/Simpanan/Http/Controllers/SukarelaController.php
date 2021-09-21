@@ -4,7 +4,8 @@ namespace Modules\Simpanan\Http\Controllers;
 
 
 use Modules\Keuangan\Entities\Transaksi;
-use Modules\Keuangan\Entities\TransaksiKas;
+use Modules\Keuangan\Entities\TransaksiLine;
+use Modules\Keuangan\Entities\TransaksiBayar;
 use Modules\Simpanan\Entities\Wallet;
 use Modules\Simpanan\Entities\SimlaTransaksi;
 
@@ -45,7 +46,6 @@ class SukarelaController extends Controller
     {
         $rules = [
             'anggota_id' => 'required',
-            'kas_id' => 'required',
             'jumlah' => 'required',
             'tgl' => 'required',
             'type' => 'required',
@@ -79,55 +79,39 @@ class SukarelaController extends Controller
             try{
 
                 $transaksi = new Transaksi();
+                $transaksi->nomor = $request->kd_transaksi;
                 $transaksi->anggota_id = $request->anggota_id;
-                $transaksi->jenis = $request->type === 'deposit' ? 'setoran sukarela' : 'penarikan sukarela';
-                $transaksi->teller_id   = auth()->user()->id;
-                $transaksi->item = json_encode($item);
+                $transaksi->service = 'simpanan';
+                $transaksi->sub_service = 'sukarela';
+                $transaksi->jenis = $request->type === 'isi saldo' ? 'setoran sukarela' : 'penarikan sukarela';
+                $transaksi->teller_id   = auth()->guard('admin')->user()->id;
+                $transaksi->keterangan = $request->keterangan;
                 $transaksi->total = $request->jumlah;
                 $transaksi->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
+                $transaksi->status = 1;
                 $transaksi->save();
 
 
-            }catch(\QueryException $e){
-                DB::rollback();
-                return response()->json([
-                    'fail' => true,
-                    'pesan' => 'Terjadi Error Transaksi',
-                    'error' => $e,
-                ]);
-            }
+                $line = new TransaksiLine();
+                $line->jumlah = $request->jumlah;
+                $line->keterangan = 'Simpanan Sukarela';
+                $line->akun_id = 14;
+                $line->user_id = auth()->guard('admin')->user()->id;
+                $line->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
+                $transaksi->line()->save($line);
 
-            try{
+                $payment = new TransaksiBayar();
+                $payment->method = 'Tunai';
+                $payment->jumlah = $request->jumlah;
+                $payment->status = 'confirm';
+                $transaksi->pembayaran()->save($payment);
 
-                $kas = new TransaksiKas();
-                $kas->kd_trans_kas = get_no_transaksi_kas($request->type === 'deposit' ? 'pemasukan' : 'pengeluaran');
-                $kas->kas_id = $request->kas_id;
-                $kas->jumlah = $request->jumlah;
-                $kas->keterangan = 'Simpanan Sukarela';
-                $kas->jenis = $request->type === 'deposit' ? 'pemasukan' : 'pengeluaran';
-                $kas->akun_id = 14;
-                $kas->user_id = auth()->user()->id;
-                $kas->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $kas->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $transaksi->transaksi_kas()->save($kas);
-
-            }catch(\QueryException $e){
-                DB::rollback();
-                return response()->json([
-                    'fail' => true,
-                    'pesan' => 'Error Kas',
-                    'error' => $e,
-                ]);
-            }
-
-
-            try{
 
                 $simla = new SimlaTransaksi();
                 $simla->anggota_id = $request->anggota_id;
                 $simla->type = $request->type;
                 $simla->jumlah = $request->jumlah;
-                $simla->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
+                // $simla->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->simla()->save($simla);
 
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
@@ -150,7 +134,7 @@ class SukarelaController extends Controller
             DB::commit();
             return response()->json([
                 'fail' => false,
-                'invoice' => $request->kd_transaksi,
+                'invoice' => $transaksi->id,
             ]);
         }
 
@@ -159,28 +143,28 @@ class SukarelaController extends Controller
 
     public function edit($id, Request $request)
     {
-        $data = SimlaTransaksi::with([
+        $data = Transaksi::with([
             'anggota' => function($query){
                 $query->select('anggota_id','nama', 'no_ktp', 'no_hp');
             },
-            'transaksi'
+            'line', 'simla'
         ])
-        ->where('no_transaksi', $id)->first();
+        ->where('id', $id)->first();
+        // dd($data);
+        $type = $data->simla->type;
 
-        $kas = TransaksiKas::where('no_transaksi', $id)->first();
+        // $line = TransaksiKas::where('no_transaksi', $id)->first();
 
 
-        return view('simpanan::sukarela.form.edit', compact('data', 'kas'));
+        return view('simpanan::sukarela.form.edit', compact('data', 'type'));
     }
     
     public function update(Request $request)
     {
         $rules = [
             'anggota_id' => 'required',
-            'kas_id' => 'required',
             'jumlah' => 'required',
             'tgl' => 'required',
-            'type' => 'required',
         ];
 
         $pesan = [
@@ -217,68 +201,42 @@ class SukarelaController extends Controller
             DB::beginTransaction();
             try{
 
-                $transaksi = Transaksi::where('no_transaksi', $request->kd_transaksi)->first();
-                
+                $transaksi = Transaksi::where('id', $request->id)->first();
                 $transaksi->anggota_id = $request->anggota_id;
-
-                if(abs($transaksi->total) !== $request->jumlah){
+                if(abs($transaksi->total) != $request->jumlah){
                     $transaksi->total = $request->jumlah;
-                    $transaksi->item = json_encode($item);
                 }
-                $transaksi->tgl_transaksi = Carbon::parse($request->tgl)->format('Y-m-d');
+                $transaksi->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
                 $transaksi->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
+                $transaksi->status = 1;
                 $transaksi->save();
 
-            }catch(\QueryException $e){
-                DB::rollback();
-                return response()->json([
-                    'fail' => true,
-                    'pesan' => 'Terjadi Error Transaksi',
-                    'error' => $e,
-                ]);
-            }
-
-            try{
-
-                $kas = TransaksiKas::where('no_transaksi', $request->kd_transaksi)->first();
-                $kas->kas_id = $request->kas_id;
-
-                if(abs($kas->jumlah) !== $request->jumlah){
-                    $kas->jumlah = $request->jumlah;
+                $line = TransaksiLine::where('transaksi_id', $request->id)->first();
+                if(abs($line->jumlah) != $request->jumlah){
+                    $line->jumlah = $request->jumlah;
                 }
                 
-                $kas->akun_id = 14;
-                $kas->user_id = auth()->user()->id;
-                $kas->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $kas->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $kas->save();
+                $line->user_id = auth()->guard('admin')->user()->id;
+                $line->save();
 
-            }catch(\QueryException $e){
-                DB::rollback();
-                return response()->json([
-                    'fail' => true,
-                    'pesan' => 'Error Kas',
-                    'error' => $e,
-                ]);
-            }
+                
+                $payment = TransaksiBayar::where('transaksi_id', $transaksi->id)->first();
+                $payment->jumlah = $request->jumlah;
+                $payment->save();
 
 
-            try{
-
-                $simla = SimlaTransaksi::where('no_transaksi', $request->kd_transaksi)->first();
+                $simla = SimlaTransaksi::where('transaksi_id', $request->id)->first();
                 $simla->anggota_id = $request->anggota_id;
-                $simla->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $simla->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
 
-                if(abs($request->jumlah) !== $simla->amount){
-                    $simla->amount = $request->jumlah;
+                if(abs($request->jumlah) !== $simla->jumlah){
+                    $simla->jumlah = $request->jumlah;
                     $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
 
                     if($request->type == 'deposit'){
-                        $wallet->decrement('sukarela', $simla->amount);
+                        $wallet->decrement('sukarela', $simla->jumlah);
                         $wallet->increment('sukarela', $request->jumlah);
                     }else{
-                        $wallet->increment('sukarela', $simla->amount);
+                        $wallet->increment('sukarela', $simla->jumlah);
                         $wallet->decrement('sukarela', $request->jumlah);
                     }
                 }
@@ -298,7 +256,7 @@ class SukarelaController extends Controller
             DB::commit();
             return response()->json([
                 'fail' => false,
-                'invoice' => $request->kd_transaksi,
+                'invoice' => $transaksi->id,
             ]);
         }
 
@@ -345,7 +303,7 @@ class SukarelaController extends Controller
 
     public function invoice($id)
     {
-        $data = Transaksi::find($id);
+        $data = Transaksi::where('id', $id)->first();
         if($data->jenis == 'penarikan sukarela')
         {
             $data->title = 'SLIP PENARIKAN';
@@ -363,7 +321,7 @@ class SukarelaController extends Controller
 
     public function invoice_print($id)
     {
-        $invoice = Transaksi::find($id);
+        $data = Transaksi::where('id', $id)->first();
 
         if($invoice->jenis == 'penarikan sukarela')
         {

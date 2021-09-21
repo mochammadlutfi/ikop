@@ -7,7 +7,8 @@ namespace Modules\Simpanan\Http\Controllers;
 use Modules\Anggota\Entities\Anggota;
 
 use Modules\Keuangan\Entities\Transaksi;
-use Modules\Keuangan\Entities\TransaksiKas;
+use Modules\Keuangan\Entities\TransaksiBayar;
+use Modules\Keuangan\Entities\TransaksiLine;
 
 use Modules\Simpanan\Entities\SimkopTransaksi;
 use Modules\Simpanan\Entities\SimlaTransaksi;
@@ -75,7 +76,6 @@ class KoperasiController extends Controller
                 'errors' => $validator->errors()
             ]);
         }else{
-            
             $pay_check = SimkopTransaksi::where('anggota_id', $request->anggota_id)
             ->whereMonth('periode', Date::createFromFormat('d F Y', '1 '.$request->periode)->format('m'))
             ->whereYear('periode', Date::createFromFormat('d F Y', '1 '.$request->periode)->format('Y'))
@@ -89,17 +89,21 @@ class KoperasiController extends Controller
                 ]);
             }
 
-
             $item = collect([
                 array(
                     'keterangan' => 'Simpanan Wajib',
-                    'nominal' => 100000,
-                ),
-                array(
-                    'keterangan' => 'Simpanan Sosial',
-                    'nominal' => $request->jml_sosial,
+                    'jumlah' => 100000,
+                    'akun' => 4,
                 ),
             ]);
+            
+            if(!empty($request->jml_sosial)){
+                $item = $item->push([
+                    'keterangan' => 'Simpanan Sosial',
+                    'jumlah' => $request->jml_sosial,
+                    'akun' => 9,
+                ]);
+            }
 
             DB::beginTransaction();
             Date::today()->format('H:i:s');
@@ -107,8 +111,9 @@ class KoperasiController extends Controller
                 $transaksi = new Transaksi();
                 $transaksi->nomor = $request->kd_transaksi;
                 $transaksi->anggota_id = $request->anggota_id;
+                $transaksi->service = 'simpanan';
+                $transaksi->sub_service = 'wajib';
                 $transaksi->jenis = 'setoran wajib';
-                $transaksi->item = json_encode($item);
                 $transaksi->total = 100000 + $request->jml_sosial;
                 $transaksi->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
@@ -123,34 +128,22 @@ class KoperasiController extends Controller
 
                 $transaksi->simkop()->save($pay_wajib);
 
-                $kas_wajib = new TransaksiKas();
-                $kas_wajib->kd_trans_kas = get_no_transaksi_kas('pemasukan');
-                $kas_wajib->kas_id = $request->kas_id;
-                $kas_wajib->jumlah = 100000;
-                $kas_wajib->keterangan = 'Simpanan Wajib';
-                $kas_wajib->jenis = 'pemasukan';
-                $kas_wajib->akun_id = 4;
-                $kas_wajib->user_id = auth()->guard('admin')->user()->id;
-                $kas_wajib->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
-                $transaksi->transaksi_kas()->save($kas_wajib);
+                $payment = new TransaksiBayar();
+                $payment->method = 'Tunai';
+                $payment->jumlah = !empty($request->jml_sosial) ? 150000 : 100000;
+                $payment->status = 'confirm';
+                $transaksi->pembayaran()->save($payment);
 
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
                 $wallet->increment('wajib', 100000);
 
-                if($request->jml_sosial != ''){
-                    $wallet->increment('sosial', 5000);
-
-                    $kas_sosial = new TransaksiKas();
-                    $kas_sosial->kd_trans_kas = get_no_transaksi_kas('pemasukan');
-                    $kas_sosial->kas_id = $request->kas_id;
-                    $kas_sosial->jumlah = $request->jml_sosial;
-                    $kas_sosial->keterangan = 'Simpanan Sosial';
-                    $kas_sosial->jenis = 'pemasukan';
-                    $kas_sosial->akun_id = 9;
-                    $kas_sosial->user_id = auth()->guard('admin')->user()->id;
-                    $kas_sosial->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
-                    $kas_sosial->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                    $transaksi->transaksi_kas()->save($kas_sosial);
+                foreach($item as $i){
+                    $line = new TransaksiLine();
+                    $line->akun_id = $i['akun'];
+                    $line->jumlah = $i['jumlah'];
+                    $line->keterangan = $i['keterangan'];
+                    $line->user_id = auth()->guard('admin')->user()->id;
+                    $transaksi->line()->save($line);
                 }
 
             }catch(\QueryException $e){
@@ -176,11 +169,12 @@ class KoperasiController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $data = Transaksi::select('transaksi.*', 'a.kas_id', 'b.nama as kas_nama')
-        ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
-        ->join('kas as b', 'b.id', '=', 'a.kas_id')
+        $data = Transaksi::
+        with(['simkop',])
+        // ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+        // ->join('kas as b', 'b.id', '=', 'a.kas_id')
         ->where('transaksi.id', $id)->first();
-
+        // dd($data->toArray());
         return view('simpanan::koperasi.edit', compact('data'));
     }
 
@@ -227,64 +221,45 @@ class KoperasiController extends Controller
             }
 
 
-            $item = collect([
-                array(
-                    'keterangan' => 'Simpanan Wajib',
-                    'nominal' => 100000,
-                    'akun' => 4,
-                ),
-                array(
+            $item = collect([]);
+            
+            if(!empty($request->jml_sosial)){
+                $item = $item->push([
                     'keterangan' => 'Simpanan Sosial',
-                    'nominal' => $request->jml_sosial,
+                    'jumlah' => $request->jml_sosial,
                     'akun' => 9,
-                ),
-            ]);
+                ]);
+            }
 
             DB::beginTransaction();
             try{
 
                 Date::today()->format('H:i:s');
 
-                $transaksi = Transaksi::where('no_transaksi', $request->id)->first();
+                $transaksi = Transaksi::where('transaksi_id', $request->id)->first();
                 $transaksi->anggota_id = $request->anggota_id;
                 $transaksi->teller_id  = auth()->guard('admin')->user()->id;
-                $transaksi->item = json_encode($item);
+                $transaksi->keterangan = $request->keterangan;
                 $transaksi->total = 100000 + $request->jml_sosial;
                 $transaksi->tgl_transaksi = Carbon::parse($request->tgl)->format('Y-m-d');
                 $transaksi->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->save();
 
-                $pay_wajib = SimkopTransaksi::where('no_transaksi', $request->id)->first();
-                $pay_wajib->anggota_id  = $request->anggota_id;
-                $pay_wajib->periode = Date::createFromFormat('d F Y', '1 '.$request->periode)->format('Y-m-d');
-                $pay_wajib->jumlah = 100000;
-                $pay_wajib->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $pay_wajib->save();
-
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
                 $wallet->increment('wajib', 100000);
+                
                 if($wallet->sosial !== $request->jml_sosial){
                     $wallet->decrement('sosial', $wallet->sosial);
                     $wallet->increment('sosial', $request->jml_sosial);
                 }
 
-                $kas = TransaksiKas::where('no_transaksi', $request->id)->get();
-
-                $kas_wajib = TransaksiKas::where('no_transaksi', $request->id)->where('akun_id', 4)->first();
-                $kas_wajib->user_id = auth()->guard('admin')->user()->id;
-                $kas_wajib->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
-                $kas_wajib->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                $kas_wajib->save();
-
-                $kas_sosial = TransaksiKas::where('no_transaksi', $request->id)->where('akun_id', 9)->first();
-                $kas_sosial->user_id = auth()->guard('admin')->user()->id;
-                $kas_sosial->tgl = Carbon::parse($request->tgl)->format('Y-m-d');
-                $kas_sosial->created_at = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
-                if($request->jml_sosial !== $kas_sosial->jumlah){
-                    $kas_sosial->jumlah = $request->jml_sosial;
+                $sosial = TransaksiLine::where('transaksi_id', $request->id)->where('akun_id', 9)->first();
+                if(empty($request->jml_sosial)){
+                    $sosial->destroy();
+                }elseif($request->jml_sosial !== $sosial->jumlah){
+                    $sosial->jumlah = $request->jml_sosial;
+                    $sosial->save();
                 }
-                $kas_sosial->save();
-
 
             }catch(\QueryException $e){
                 DB::rollback();
@@ -377,9 +352,8 @@ class KoperasiController extends Controller
 
     public function invoice($id)
     {
-        // $data = Transaksi::with('anggota')->where('no_transaksi', $id)->firstorfail();
-        $data = Transaksi::where('id',$id)->first();
-
+        $data = Transaksi::with(['line', 'pembayaran'])
+        ->where('id', $id)->first();
         return view('simpanan::koperasi.invoice', compact('data'));
     }
 

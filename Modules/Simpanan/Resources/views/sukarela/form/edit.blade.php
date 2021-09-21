@@ -19,7 +19,7 @@
 
 <div class="content">
     <div class="content-heading pt-0 mb-3">
-        Setoran Tunai
+        Ubah Setoran Tunai
     </div>
 
     <div class="row">
@@ -30,6 +30,7 @@
                         @csrf
                         <input type="hidden" name="type" value="{{ $data->type }}">
                         <input type="hidden" id="method" value="update">
+                        <input type="hidden" name="id" value="{{ $data->id }}">
                         <h2 class="content-heading pt-0">Informasi Anggota</h2>
                         <div class="row">
                             <div class="col-md-6">
@@ -63,33 +64,28 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field-kd_transaksi">No. Transaksi</label>
-                                    <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ $data->no_transaksi }}">
+                                    <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ $data->nomor }}">
                                 </div>
                                 <div class="form-group">
                                     <label for="field-tgl">Tanggal Transaksi</label>
-                                    <input type="text" id="field-tgl" class="form-control" name="tgl" autocomplete="off" value="{{ \Carbon\Carbon::parse($data->transaksi->tgl_transaksi)->format('d-m-Y') }}">
+                                    <input type="text" id="field-tgl" class="form-control" name="tgl" autocomplete="off" value="{{ \Carbon\Carbon::parse($data->tgl)->format('d-m-Y') }}">
                                     <span id="error-tgl" class="invalid-feedback"></span>
-                                </div>
-                                <div class="form-group">
-                                    <label for="field-kas_id">Kas</label>
-                                    <select class="form-control" name="kas_id" id="field-kas_id" data-id="{{ $kas->kas->id }}" data-text="{{ $kas->kas->nama }}"></select>
-                                    <span id="error-kas_id" class="invalid-feedback"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field-jumlah">Jumlah</label>
-                                    <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah" value="{{ $data->amount }}">
+                                    <input type="text" class="form-control input-currency" name="jumlah" id="field-jumlah" value="{{ $data->total }}">
                                     <span id="error-jumlah" class="invalid-feedback"></span>
                                 </div>
                                 <div class="form-group">
                                     <label>Keterangan (Optional)</label>
-                                    <textarea class="form-control" name="keterangan" rows="5" placeholder="Masukan Keterangan (Jika Ada)"></textarea>
+                                    <input type="text" class="form-control" name="keterangan" id="field-keterangan" placeholder="Masukan Keterangan (Jika Ada)">
                                 </div>
                             </div>
                         </div>
                         <div class="row justify-content-center">
-                            <button id="submit" type="submit" class="btn btn-primary">Proses Transaksi</button>
+                            <button id="submit" type="submit" class="btn btn-primary">Simpan Transaksi</button>
                         </div>
                     </form>
                 </div>

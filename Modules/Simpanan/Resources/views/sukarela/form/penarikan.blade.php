@@ -59,17 +59,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="field-kd_transaksi">No. Transaksi</label>
-                            <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ generate_transaksi_kd() }}">
+                            <input type="text" id="field-transaksi" class="form-control" name="kd_transaksi" value="{{ get_simla_nomor() }}">
                         </div>
                         <div class="form-group">
                             <label for="field-tgl">Tanggal Transaksi</label>
                             <input type="text" id="field-tgl" class="form-control" name="tgl" autocomplete="off" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                             <span id="error-tgl" class="invalid-feedback"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="field-kas_id">Kas</label>
-                            <select class="form-control" name="kas_id" id="field-kas_id"></select>
-                            <span id="error-kas_id" class="invalid-feedback"></span>
                         </div>
                     </div>
                     <div class="col-md-6">

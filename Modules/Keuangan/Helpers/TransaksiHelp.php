@@ -31,7 +31,8 @@ if(!function_exists('get_ppob_code')){
 
 if(!function_exists('get_simla_nomor')){
     function get_simla_nomor(){
-        $q = Transaksi::select(DB::raw('MAX(RIGHT(nomor,5)) AS kd_max'));
+        $date = Date::now()->format('Y-m-d');
+        $q = Transaksi::select(DB::raw('MAX(RIGHT(nomor,5)) AS kd_max'))->whereDate('tgl', $date)->where('sub_service', 'sukarela');
         
         $kd_cabang = 1;
         $no = 1;

@@ -30,6 +30,22 @@
         </a>
     </li>
 
+
+    <li class="{{ Request::is('setoran/*') ? 'open' : null }}">
+        <a class="nav-submenu" data-toggle="nav-submenu" href="#">
+            <i class="si si-wallet"></i>
+            <span class="sidebar-mini-hide">Setoran</span>
+        </a>
+        <ul>
+            <li>
+                <a class="{{ Request::is('setoran/tambah') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Simpanan Wajib & Sosial</a>
+            </li>
+            <li>
+                <a class="{{ Request::is('setoran/sukarela') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Simpanan Sukarela</a>
+            </li>
+
+        </ul>
+    </li>
     
     <li class="{{ Request::is('simpanan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#">

@@ -127,7 +127,7 @@
                         <label class="col-6 col-lg-3 mb-0 font-size-18 font-size-14-down-lg ">No. Transaksi</label>
                         <div class="col-6 col-lg-9">
                             <div class="form-control-plaintext text-left py-0 font-size-18 font-size-14-down-lg">
-                                : {{ $data->no_transaksi }}
+                                : {{ $data->nomor }}
                             </div>
                         </div>
                     </div>
@@ -141,14 +141,13 @@
                         </thead>
                         <tbody>
                             <?php $no=1 ;?>
-                            {{-- @if (is_array($data->item) || is_object($data->item)) --}}
-                            @foreach(json_decode($data->item) as $item)
+                            @foreach($data->line as $item)
                             <tr>
                                 <td class="text-center">{{ $no++ }}</td>
                                 <td class="text-left">
                                     <p class="font-w600 mb-5">{{ $item->keterangan }}</p>
                                 </td>
-                                <td class="text-left">Rp {{ number_format($item->nominal,0,",",".") }}</td>
+                                <td class="text-left">Rp {{ number_format($item->jumlah,0,",",".") }}</td>
                             </tr>
                             @endforeach
                             {{-- @endif --}}
