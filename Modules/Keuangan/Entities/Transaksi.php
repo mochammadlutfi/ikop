@@ -27,7 +27,7 @@ class Transaksi extends Model
 
     public function simkop()
     {
-        return $this->hasOne('Modules\Simpanan\Entities\SimkopTransaksi');
+        return $this->hasMany('Modules\Simpanan\Entities\SimkopTransaksi');
     }
 
     public function simla()

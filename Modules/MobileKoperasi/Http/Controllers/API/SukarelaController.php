@@ -5,12 +5,14 @@ namespace Modules\MobileKoperasi\Http\Controllers\API;
 use Modules\Simpanan\Entities\Wallet;
 
 
+use Modules\Anggota\Entities\Anggota;
 use Modules\Keuangan\Entities\Transaksi;
-use Modules\Keuangan\Entities\TransaksiKas;
+use Modules\Keuangan\Entities\TransaksiLine;
 use Modules\Keuangan\Entities\Payment;
 use Modules\Simpanan\Entities\SimlaTransaksi;
 use Modules\Bank\Entities\Bank;
 
+use App\Helpers\Notification;
 use App\Models\User;
 use Date;
 use Hash;
@@ -35,11 +37,12 @@ class SukarelaController extends Controller
 
         $saldo = SimlaTransaksi::
         leftJoin('transaksi as a', 'a.id', '=', 'simla_transaksi.transaksi_id')
+        ->leftJoin('transaksi_bayar as b', 'b.transaksi_id', '=', 'simla_transaksi.transaksi_id')
         ->where('a.status', 1)
+        ->where('b.status', "confirm")
         ->where('a.anggota_id', $anggota_id)
-        ->sum('jumlah');
+        ->sum('simla_transaksi.jumlah');
         
-
         return response()->json([
             'data' =>(int)$saldo,
             'fail' => false,
@@ -132,7 +135,7 @@ class SukarelaController extends Controller
                 $transaksi->jenis = 'transfer sukarela';
                 $transaksi->service = 'simpanan';
                 $transaksi->sub_service = 'sukarela';
-                $transaksi->item = json_encode($item);
+                $transaksi->keterangan = $request->keterangan;
                 $transaksi->total = $request->jumlah;
                 $transaksi->tgl = $tgl->format('Y-m-d H:i:s');
                 $transaksi->status = 1;
@@ -145,11 +148,23 @@ class SukarelaController extends Controller
                 $simla->jumlah = -$request->jumlah;
                 $transaksi->simla()->save($simla);
 
+                $tujuan = Anggota::where('anggota_id', $request->anggota_id)->first();
+                $tujuan->nama;
+                $fcm_token = $user->device_id;
+                
+                $data = [
+                    'title'       => 'Transfer Berhasil',
+                    'description' => "Transfer Ke ".$tujuan->nama ." Berhasil",
+                    'order_id'    => $transaksi->id,
+                    'image'       => '',
+                ];
+                Notification::send_push_notif_to_device($fcm_token, $data);
+
             }catch(\QueryException $e){
                 DB::rollback();
                 return response()->json([
                     'fail' => true,
-                    'pesan' => 'Terjadi Error Transaksi',
+                    'message' => 'Terjadi Error Transaksi',
                     'error' => $e,
                 ]);
             }
@@ -161,7 +176,7 @@ class SukarelaController extends Controller
         }
         return response()->json([
             'fail' => true,
-            'pesan' => 'Security Code Salah',
+            'message' => 'Security Code Salah',
         ], 203);
     }
 

@@ -237,7 +237,7 @@ class SimpananController extends Controller
         
         $tgl_gabung = $request->user()->anggota->tgl_gabung;
         $anggota_id = $request->user()->anggota_id;
-        $dari = Date::parse($tgl_gabung)->startOfMonth();
+        $dari = Date::parse($tgl_gabung)->startOfMonth()->year('2021');
         $now = Date::now()->endOfMonth();
         $diff_in_months = $dari->diffInMonths($now);
 

@@ -58,10 +58,10 @@ jQuery(function() {
                 modal.find('table tbody').append(row);
 
                 modal.find('.modal-footer').append(`
-                <button type="button" class="btn btn-danger btn-sm btn-action" data-val="3" data-id="${response.id}">
+                <button type="button" class="btn btn-danger btn-sm btn-action" data-val="cancel" data-id="${response.id}">
                     <i class="si si-close mr-2"></i> Tolak
                 </button>
-                <button type="button" class="btn btn-success btn-sm btn-action" data-val="1" data-id="${response.id}">
+                <button type="button" class="btn btn-success btn-sm btn-action" data-val="confirm" data-id="${response.id}">
                     <i class="si si-check mr-2"></i> Konfirmasi
                 </button>
                 `);
@@ -310,15 +310,15 @@ function create_elementDetailTable(item){
 
 
 function createStatusBadge(status){
-    if(status == 0)
+    if(status == "pending")
     {
         return '<span class="badge badge-warning">Pending</span>';
-    }else if(status == 1){
+    }else if(status == "confirm"){
         return '<span class="badge badge-info">Aktif</span>';
-    }else if(status == 2)
+    }else if(status == "cancel")
     {
-        return '<span class="badge badge-info">Ditolak</span>';
-    }else if(status == 3)
+        return '<span class="badge badge-danger">Ditolak</span>';
+    }else if(status == "finish")
     {
         return '<span class="badge badge-primary">Lunas</span>';
     }

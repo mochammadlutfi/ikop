@@ -18,7 +18,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Validator;
 use DB;
-class PembiayaanController extends Controller
+class PembiayaanTunaiController extends Controller
 {
 
     
@@ -30,22 +30,25 @@ class PembiayaanController extends Controller
     public function index(Request $request)
     {
         $anggota_id = $request->user()->anggota_id;
-        $wallet = Wallet::where('anggota_id', $anggota_id)->first();
-
-        $tunai_aktif = PmbTunai::where('anggota_id', $anggota_id)->where('status', '!=', "cancel")->sum('jumlah');
-
-        $limit = $wallet->pokok + $wallet->wajib - $tunai_aktif;
-        $data = collect([
-            [
-                'program' => 'Pembiayaan Tunai',
-                'limit' => currency($limit),
-                'slug' => 'tunai',
-            ],
-        ]);
-        return response()->json([
-            'data' => $data,
-            'fail' => false,
-        ], 200);
+        try{
+            $data = PmbTunai::select('no_pembiayaan', 'id', 'durasi', 'jumlah', 'status', 'created_at')
+            ->where('anggota_id', $anggota_id)
+            ->paginate(15);
+            $data->each(function ($data) {
+                $data->jumlah = (int)$data->jumlah;
+                $data->tgl_pengajuan =Date::parse($data->created_at)->format('d F Y');
+            });
+            
+            return response()->json([
+                'data' => $data,
+                'fail' => false,
+            ], 200);
+        }catch(\QueryException $e){
+            return response()->json([
+                'message' => "Terjadi Kesalahan Server!",
+                'fail' => true,
+            ], 400);
+        }
     }
 
     /**
@@ -60,13 +63,14 @@ class PembiayaanController extends Controller
         $wallet = Wallet::where('anggota_id', $anggota_id)->first();
 
         if($request->slug == 'tunai'){
-            $tunai_aktif = PmbTunai::where('anggota_id', $anggota_id)->where('status', '!=', "cancel")->sum('jumlah');
+            $tunai_aktif = PmbTunai::where('anggota_id', $anggota_id)->where('status', 1)->sum('jumlah');
             $limit = $wallet->pokok + $wallet->wajib - $tunai_aktif;
 
             $now = Date::now();
             $tagihan = PmbTunai::select('pmb_tunai.anggota_id', 'pmb_tunai_detail.total', 'pmb_tunai_detail.tgl_tempo', 'pmb_tunai_detail.id')
             ->join('pmb_tunai_detail', 'pmb_tunai_detail.pmb_tunai_id', '=', 'pmb_tunai.id')
             ->where('anggota_id', $anggota_id)->where('pmb_tunai_detail.status', 0)
+            // $tagihan = PmbTunaiDetail::
             ->whereMonth('tgl_tempo', $now->format('m'))->whereYear('tgl_tempo', $now->format('Y'));
 
             $response = $response->merge([

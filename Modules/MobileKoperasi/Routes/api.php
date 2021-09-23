@@ -42,6 +42,16 @@ Route::middleware('auth:api')->namespace('API')->group(function() {
         Route::post('/pengajuan','PembiayaanController@pengajuan');
         Route::get('/{slug}/detail/{id}','PembiayaanController@detail');
         Route::get('/{slug}/tagihan','PembiayaanController@tagihan');
+
+        Route::prefix('tunai')->group(function() {
+            Route::get('/list','PembiayaanTunaiController@index');
+            Route::get('/{slug}','PembiayaanController@list_detail');
+            Route::get('/{slug}/riwayat/','PembiayaanController@riwayat');
+            Route::post('/pengajuan','PembiayaanController@pengajuan');
+            Route::get('/{slug}/detail/{id}','PembiayaanController@detail');
+            Route::get('/{slug}/tagihan','PembiayaanController@tagihan');
+        });
+
     });
 
     Route::prefix('payment')->group(function() {

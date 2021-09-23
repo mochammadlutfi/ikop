@@ -56,7 +56,7 @@ class TransaksiController extends Controller
         $response->each(function ($data) {
             $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
             $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
-            $data->total = (int)$data->total;
+            $data->total = $data->jenis == 'transfer sukarela' ? (int)-$data->total : (int)$data->total;
             $data->tgl = Date::parse($data->tgl)->format('d F Y');
             if($data->pembayaran->method == 'Simpanan Sukarela' && $data->status == 0){
                 $data->pembayaran->status = 'Diproses';
@@ -83,7 +83,7 @@ class TransaksiController extends Controller
         with(['pembayaran' => function($q){
             $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'jumlah']);
             $q->with(['bank:id,logo']);
-        }, 'ppob'])
+        }, 'ppob', 'simkop'])
         ->where('transaksi.id', $id)
         ->first();
 

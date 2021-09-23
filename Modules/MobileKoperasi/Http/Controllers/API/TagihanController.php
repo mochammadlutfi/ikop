@@ -34,7 +34,7 @@ class TagihanController extends Controller
     }
 
     private function simkop($tgl_gabung, $anggota_id){
-        $dari = Date::parse($tgl_gabung)->startOfMonth();
+        $dari = Date::parse($tgl_gabung)->startOfMonth()->year('2021');
         $now = Date::now()->endOfMonth();
         $diff_in_months = $dari->diffInMonths($now);
 
@@ -56,14 +56,15 @@ class TagihanController extends Controller
             $dari->addMonth(1);
         }
 
-        $sorted = $list->sortDesc();
+        // $data = $d->sortBy('product_price')->values();
+        // $sorted = $list->sort()->values()->all();
 
         $data = collect([
             'service' => 'Simpanan Wajib',
             'subService' => 'wajib',
             'jumlah' => $jumlah,
             'nominal' => (int)$nominal,
-            'list' => $sorted->values()->all(),
+            'list' => $list,
         ]);
 
         return $data;
@@ -75,7 +76,7 @@ class TagihanController extends Controller
             $anggota_id = $request->user()->anggota_id;
             $tgl_gabung = $request->user()->anggota->tgl_gabung;
 
-            $dari = Date::parse($tgl_gabung)->startOfMonth();
+            $dari = Date::parse($tgl_gabung)->startOfMonth()->year('2021');
             $now = Date::now()->endOfMonth();
             $diff_in_months = $dari->diffInMonths($now);
 
@@ -97,14 +98,12 @@ class TagihanController extends Controller
                 $dari->addMonth(1);
             }
 
-            $sorted = $list->sortDesc();
-
             $data = collect([
                 'service' => 'Simpanan Wajib',
                 'subService' => 'wajib',
                 'jumlah' => $jumlah,
                 'nominal' => (int)$nominal,
-                'list' => $sorted->values()->all(),
+                'list' => $list,
             ]);
         }
 

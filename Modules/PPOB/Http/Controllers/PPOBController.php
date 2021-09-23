@@ -8,7 +8,10 @@ use Illuminate\Routing\Controller;
 
  
 use Modules\Keuangan\Entities\Transaksi;
+use Modules\Keuangan\Entities\TransaksiBayar;
 use Modules\PPOB\Entities\TransaksiPPOB;
+use App\Models\User;
+use App\Helpers\Notification;
 
 class PPOBController extends Controller
 {
@@ -28,6 +31,37 @@ class PPOBController extends Controller
             $transaksi = Transaksi::where("id", $ppob->transaksi_id)->first();
             $transaksi->status = 1;
             $transaksi->save();
+            $anggota = User::where('anggota_id', $transaksi->anggota_id)->first();
+
+            $notif = [
+                'title'       => 'Transaksi Berhasil',
+                'description'  => "Terimakasih, Transaksi Kamu Telah Berhasil!",
+                'transaksi_id' => $transaksi->id,
+                'image'       => '',
+            ];
+            
+            Notification::send_push_notif_to_device($anggota->device_id, $notif);
+
+        }else{
+            $ppob = TransaksiPPOB::where('ref_id', $data["ref_id"])->first();
+
+            $transaksi = Transaksi::where("id", $ppob->transaksi_id)->first();
+            $transaksi->status = 1;
+            $transaksi->save();
+
+            $pembayaran = TransaksiBayar::where('transaksi_id', $ppob->transaksi_id)->first();
+            $pembayaran->status = "cancel";
+            $pembayaran->save();
+            $anggota = User::where('anggota_id', $transaksi->anggota_id)->first();
+            
+            $notif = [
+                'title'       => 'Oops! Transaksi Gagal',
+                'description'  => "Pembayaran transaksi kamu akan segera dikembalikan!",
+                'transaksi_id' => $transaksi->id,
+                'image'       => '',
+            ];
+            
+            Notification::send_push_notif_to_device($anggota->device_id, $notif);
         }
     }
 

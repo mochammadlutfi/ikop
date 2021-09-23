@@ -4,11 +4,16 @@ namespace Modules\Keuangan\Http\Controllers;
 
 use Modules\Keuangan\Entities\Pembayaran;
 use Modules\Keuangan\Entities\Transaksi;
+use Modules\Anggota\Entities\Anggota;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use DB;
+
+
+use App\Models\User;
+use App\Helpers\Notification;
 
 class PembayaranController extends Controller
 {
@@ -104,6 +109,15 @@ class PembayaranController extends Controller
                 $transaksi->status = $request->status == 'confirm' ? 1 : 0;
                 $transaksi->teller_id = auth()->guard('admin')->user()->id;
                 $transaksi->save();
+
+                $anggota = User::where('anggota_id', $transaksi->anggota_id)->first();
+                $data = [
+                    'title'       => 'Transaksi Berhasil',
+                    'description' => "Terimakasih, Transaksi Kamu Telah Berhasil!",
+                    'transaksi_id'    => $transaksi->id,
+                    'image'       => '',
+                ];
+                Notification::send_push_notif_to_device($anggota->device_id, $data);
 
             }catch(\QueryException $e){
                 DB::rollback();

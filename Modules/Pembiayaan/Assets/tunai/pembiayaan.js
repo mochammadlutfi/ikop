@@ -286,7 +286,7 @@ function create_element(item){
     moment.locale('id');
     let row = `<tr>
         <td>${ moment(item.created_at).format('D MMMM YYYY') }</td>
-        <td>${ item.id }</td>
+        <td>${ item.no_pembiayaan }</td>
         <td>
             <div class="font-size-16 font-w600">${ item.anggota.anggota_id }</div>
             <div class="font-size-15">${ item.anggota.nama }</div>
@@ -306,15 +306,15 @@ function create_element(item){
 
 
 function createStatusBadge(status){
-    if(status == 0)
+    if(status == "pending")
     {
         return '<span class="badge badge-warning">Pending</span>';
-    }else if(status == 1){
+    }else if(status == "confirm"){
         return '<span class="badge badge-info">Aktif</span>';
-    }else if(status == 2)
+    }else if(status == "cancel")
     {
-        return '<span class="badge badge-info">Ditolak</span>';
-    }else if(status == 3)
+        return '<span class="badge badge-danger">Ditolak</span>';
+    }else if(status == "finish")
     {
         return '<span class="badge badge-primary">Lunas</span>';
     }

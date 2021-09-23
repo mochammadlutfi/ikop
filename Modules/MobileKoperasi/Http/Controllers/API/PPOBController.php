@@ -170,7 +170,6 @@ class PPOBController extends Controller
                 $ppob = $this->topUp($request);
                 if($ppob->status != 0){
                     return response()->json([
-                        $data => $ppob,
                         'fail' => true,
                         'message' => 'Terjadi Error Transaksi',
                     ], 403);
@@ -201,7 +200,7 @@ class PPOBController extends Controller
                 $payment->transaksi_id = $nomor;
                 $payment->jumlah = -$request->jumlah;
                 $payment->bank_id = $request->bank;
-                $payment->method = $request->method;
+                $payment->method = "simla";
                 $payment->admin_fee = 0;
                 $payment->code = get_payment_code($tgl);
                 $payment->tgl_bayar = $tgl->format('Y-m-d H:i:s');
@@ -216,20 +215,23 @@ class PPOBController extends Controller
                 $simla->jumlah = -$request->jumlah;
                 $transaksi->simla()->save($simla);
     
+                // $response = collect([
+                //     'id' => $transaksi->id,
+                //     'code' => $payment->code,
+                //     'admin_fee' => $payment->admin_fee,
+                //     'jumlah' => (int)$payment->jumlah,
+                //     'method' => $payment->method,
+                //     'transaksi' => [
+                //         'id' => $transaksi->id,
+                //         'nomor' => $transaksi->nomor,
+                //         'jenis' => ucwords('pembelian '.$payment->type),
+                //         'status' => 0,
+                //     ],
+                // ]);
+
                 $response = collect([
-                    'id' => $payment->id,
-                    'code' => $payment->code,
-                    'admin_fee' => $payment->admin_fee,
-                    'jumlah' => (int)$payment->jumlah,
-                    'method' => $payment->method,
-                    'transaksi' => [
-                        'id' => $transaksi->id,
-                        'nomor' => $transaksi->nomor,
-                        'jenis' => ucwords('pembelian '.$payment->type),
-                        'status' => 0,
-                    ],
+                    'transaksi_id' => $transaksi->id,
                 ]);
-    
             }catch(\QueryException $e){
                 DB::rollback();
                 return response()->json([
@@ -238,7 +240,15 @@ class PPOBController extends Controller
                     'error' => $e,
                 ]);
             }
-    
+            $fcm_token = $request->user()->device_id;
+            $notif = [
+                'title'       => 'Transaksi Sedang Di Verifikasi',
+                'description' => "Transaksi Kamu saaat ini sedang kami proses!",
+                'transaksi_id'=> $transaksi->id,
+                'image'       => '',
+            ];
+            
+            Notification::send_push_notif_to_device($fcm_token, $notif);
             DB::commit();
             return response()->json([
                 'fail' => false,

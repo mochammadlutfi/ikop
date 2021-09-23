@@ -43,7 +43,7 @@ class PengajuanPmbTunaiController extends Controller
                 return $query->where('anggota_id', 'like', '%' . $keyword . '%')
                 ->orWhere('nama', 'like', '%' . $keyword . '%');
             })
-            ->where('status', 0)
+            ->where('status', "pending")
             ->orderBy('created_at', 'DESC')
             ->paginate(20);
 

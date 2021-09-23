@@ -23,10 +23,6 @@ Route::get('/fix', function () {
  
 
 Route::get('/coba', function () {
-    // Role::create(['guard_name' => 'admin', 'name' => 'ketua']);
-    // Role::create(['guard_name' => 'admin', 'name' => 'sekretaris']);
-    // Role::create(['guard_name' => 'admin', 'name' => 'bendahara']);
-    // auth()->guard('admin')->user()->assignRole('bendahara');
     $phone = "+6289656466525";
     $token = getenv("TWILIO_AUTH_TOKEN");
     $twilio_sid = getenv("TWILIO_SID");
@@ -35,6 +31,41 @@ Route::get('/coba', function () {
     $twilio->verify->v2->services($twilio_verify_sid)
         ->verifications
         ->create($phone, "sms");
+});
+
+Route::get('/notif', function () {
+    $key = "AAAALs0-zPY:APA91bFJ47VmfIpZxWBAP5_bxlFQmrGj5cTUS_LDDqL7RHJZxbTu1WwY4WkAHjQvyzx5CKB0qmw4BapuqgkBCE4Q98oCBrUd5bsJWBVC-rFroC7N4BzbvZxYhs1u5AGAisU-Eot8AN60";
+    $fcm_token = "eS_WyfvLSPehRJlWDfoQh8:APA91bHrwSAhmEcW_wEwsPohYx2T5ZNTML_0sgbduf6HChkgiCKQjAUiFwYqVja4EDJn7tPLUusNIKdUA3X5dILLWlF0XNJA_h6Xicpu8RowBiagpBiF1-u1Pqcey-CkA-tCdGukkzjV";
+    $url = "https://fcm.googleapis.com/fcm/send";
+    $header = ["authorization: key=" . $key . "",
+        "content-type: application/json",
+    ];
+
+    $postdata = '{
+        "to" : "' . $fcm_token . '",
+        "data" : {
+            "title":"Hanya Test",
+            "body" : "Ini Deskripsi",
+            "transaksi_id":"458",
+            "is_read": 0
+            }
+    }';
+
+    $ch = curl_init();
+    $timeout = 120;
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+    // Get URL content
+    $result = curl_exec($ch);
+    // close handle to release resources
+    curl_close($ch);
+
+    return $result;
 });
 
 Route::group(['prefix' => 'setoran'], function () {
@@ -52,9 +83,4 @@ Route::group(['prefix' => 'setoran'], function () {
     // Route::get('/tunggakan', 'KoperasiController@tunggakan')->name('simkop.tunggakan');
     // Route::get('/tunggakan/detail/{id}', 'KoperasiController@tunggakan_detail')->name('simkop.tunggakan.detail');
 });
-
-
-// Route::namespace('Auth')->group(function(){
-// });
-
 

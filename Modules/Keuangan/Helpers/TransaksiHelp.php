@@ -104,7 +104,7 @@ if(!function_exists('get_payment_code')){
         date_default_timezone_set('Asia/Jakarta');
         if($q->count() > 0){
             foreach($q->get() as $k){
-                return (int)$k->kd_max;
+                return (int)$k->kd_max+1;
             }
         }else{
             return 100;
