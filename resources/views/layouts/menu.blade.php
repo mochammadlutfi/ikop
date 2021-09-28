@@ -5,11 +5,6 @@
             Dashboard
         </a>
     </li>
-    <li>
-        <a class="{{ Request::is('cabang') ? 'active' : null }}" href="{{ route('cabang') }}">
-            <i class="fa fa-building"></i>Cabang
-        </a>
-    </li>
     <li class="{{ Request::is('anggota/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-users"></i><span class="sidebar-mini-hide">Anggota</span></a>
         <ul>
@@ -34,14 +29,30 @@
     <li class="{{ Request::is('setoran/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#">
             <i class="si si-wallet"></i>
-            <span class="sidebar-mini-hide">Setoran</span>
+            <span class="sidebar-mini-hide">Setoran Tunai</span>
         </a>
         <ul>
             <li>
-                <a class="{{ Request::is('setoran/tambah') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Simpanan Wajib & Sosial</a>
+                <a class="{{ Request::is('setoran/wajib') ? 'active' : null }}" href="{{ route('setoran.wajib') }}">Simpanan Wajib & Sosial</a>
             </li>
             <li>
                 <a class="{{ Request::is('setoran/sukarela') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Simpanan Sukarela</a>
+            </li>
+
+        </ul>
+    </li>
+
+    <li class="{{ Request::is('penarikan/*') ? 'open' : null }}">
+        <a class="nav-submenu" data-toggle="nav-submenu" href="#">
+            <i class="si si-wallet"></i>
+            <span class="sidebar-mini-hide">Penarikan</span>
+        </a>
+        <ul>
+            <li>
+                <a class="{{ Request::is('penarikan/tunai') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Penarikan Tunai</a>
+            </li>
+            <li>
+                <a class="{{ Request::is('penarikan/bank') ? 'active' : null }}" href="{{ route('setoran.sukarela') }}">Penarikan Ke Bank</a>
             </li>
 
         </ul>
@@ -131,6 +142,12 @@
             <li>
                 <a class="{{ Request::is('keuangan/bank') ? 'active' : null }}" href="{{ route('bank') }}">Data Bank</a>
             </li>
+            <li>
+                <a class="{{ Request::is('keuangan/simpanan') ? 'active' : null }}" href="{{ route('bank') }}">Kas Simpanan</a>
+            </li>
+            <li>
+                <a class="{{ Request::is('keuangan/neraca') ? 'active' : null }}" href="{{ route('bank') }}">Neraca Saldo</a>
+            </li>
             <li class="{{ Request::is('keuangan/kas/*', 'keuangan/kas') ? 'open' : null }}">
                 <a class="nav-submenu" data-toggle="nav-submenu" href="#">Kas</a>
                 <ul>
@@ -161,11 +178,32 @@
             </li>
         </ul>
     </li>
-    <li>
-        <a class="{{ Request::is('slider', 'slider/*') ? 'active' : null }}" href="{{ route('slider') }}">
-            <i class="si si-picture"></i>Slider</span>
+    
+    <li class="{{ Request::is('settings/*') ? 'open' : null }}">
+        <a class="nav-submenu" data-toggle="nav-submenu" href="#">
+            <i class="fa fa-wrench"></i>
+            <span class="sidebar-mini-hide">Settings</span>
         </a>
+        <ul>
+            <li>
+                <a class="{{ Request::is('settings/cabang') ? 'active' : null }}" href="{{ route('cabang') }}">
+                    Cabang
+                </a>
+            </li>
+            <li>
+                <a class="{{ Request::is('settings/slider', 'setting/slider/*') ? 'active' : null }}" href="{{ route('slider') }}">
+                    Slider
+                </a>
+            </li>
+            <li>
+                <a class="{{ Request::is('settings/user') ? 'active' : null }}" href="{{ route('settings.user') }}">
+                    Pengguna
+                </a>
+            </li>
+        </ul>
     </li>
+
+    
     <li class="{{ Request::is('laporan/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-printer"></i><span class="sidebar-mini-hide">Laporan</span></a>
         <ul>
@@ -176,11 +214,6 @@
                 <a class="{{ Request::is('laporan/neraca-saldo') ? 'active' : null }}" href="{{ route('laporan.neraca') }}">Neraca Saldo</a>
             </li>
         </ul>
-    </li>
-    <li>
-        <a class="{{ Request::is('Pengguna') ? 'active' : null }}" href="{{ route('pengguna') }}">
-            <i class="fa fa-user-tie"></i>Pengguna
-        </a>
     </li>
     <li class="{{ Request::is('mobile-koperasi/*') ? 'open' : null }}">
         <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-mobile-alt"></i><span class="sidebar-mini-hide">Mobile Koperasi</span></a>

@@ -76,11 +76,11 @@ Route::prefix('keuangan')->group(function() {
         });
     });
 });
-Route::group(['prefix' => 'pembayaran'], function () {
-    Route::get('/', 'PembayaranController@index')->name('pembayaran');
-    Route::get('/detail/{id}', 'PembayaranController@detail')->name('pembayaran.detail');
-    Route::post('/action/{id}', 'PembayaranController@action')->name('pembayaran.action');
-});
+// Route::group(['prefix' => 'pembayaran'], function () {
+//     Route::get('/', 'PembayaranController@index')->name('pembayaran');
+//     Route::get('/detail/{id}', 'PembayaranController@detail')->name('pembayaran.detail');
+//     Route::post('/action/{id}', 'PembayaranController@action')->name('pembayaran.action');
+// });
 
 Route::group(['prefix' => 'transaksi'], function () {
     Route::get('/', 'TransactionController@index')->name('transaksi');

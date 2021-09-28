@@ -21,6 +21,7 @@ use GuzzleHttp\Client;
 use IakID\IakApiPHP\IAK;
 use IakID\IakApiPHP\Services\IAKPrepaid;
 use IakID\IakApiPHP\Services\IAKPostpaid;
+use App\Helpers\Notification;
 
 class PPOBController extends Controller
 {
@@ -68,6 +69,21 @@ class PPOBController extends Controller
                             "product_nominal" => $collect->product_nominal,
                             "product_details" => $collect->product_details,
                             "product_price" => $this->pulsa_price($collect->product_nominal),
+                            "product_type" => $collect->product_type,
+                            "active_period" => $collect->active_period,
+                            "status" => $collect->status,
+                            "icon_url" => $collect->icon_url,
+                        ];
+                    });
+                }else if($request->type == 'data'){
+                    $d = collect($d)->map(function($collection, $key) {
+                        $collect = (object)$collection;
+                        return [
+                            "product_code" => $collect->product_code,
+                            "product_description" => $collect->product_description,
+                            "product_nominal" => $collect->product_nominal,
+                            "product_details" => $collect->product_details,
+                            "product_price" => $collect->product_price + 1000,
                             "product_type" => $collect->product_type,
                             "active_period" => $collect->active_period,
                             "status" => $collect->status,

@@ -1,6 +1,5 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers;
 use Spatie\Permission\Models\Role;
 use Twilio\Rest\Client;
 /*
@@ -71,6 +70,7 @@ Route::get('/notif', function () {
 Route::group(['prefix' => 'setoran'], function () {
 
     Route::get('/sukarela', 'SetoranController@sukarela')->name('setoran.sukarela');
+    Route::get('/wajib', 'SetoranController@wajib')->name('setoran.wajib');
     // Route::post('/store', 'KoperasiController@store')->name('simkop.store');
 
     // Route::get('/edit/{id}', 'KoperasiController@edit')->name('simkop.edit');
@@ -82,5 +82,42 @@ Route::group(['prefix' => 'setoran'], function () {
     
     // Route::get('/tunggakan', 'KoperasiController@tunggakan')->name('simkop.tunggakan');
     // Route::get('/tunggakan/detail/{id}', 'KoperasiController@tunggakan_detail')->name('simkop.tunggakan.detail');
+});
+
+
+Route::group(['prefix' => 'pembayaran'], function () {
+    Route::get('/', 'PembayaranController@index')->name('pembayaran');
+    Route::get('/detail/{id}', 'PembayaranController@detail')->name('pembayaran.detail');
+    Route::post('/action/{id}', 'PembayaranController@action')->name('pembayaran.action');
+});
+
+Route::group(['prefix' => 'settings', 'namespace' => 'Settings'], function () {
+
+    Route::prefix('cabang')->group(function() {
+        Route::get('/', 'CabangController@index')->name('cabang');
+        Route::post('/save','CabangController@save')->name('cabang.save');
+        Route::get('/edit/{id}','CabangController@edit')->name('cabang.edit');
+        Route::post('/update','CabangController@update')->name('cabang.update');
+        Route::get('/hapus/{id}','CabangController@hapus')->name('cabang.hapus');
+    });
+
+    Route::group(['prefix' => 'slider'], function(){
+        Route::get('/', 'SliderController@index')->name('slider');
+        Route::get('/tambah', 'SliderController@tambah')->name('slider.tambah');
+        Route::post('/simpan','SliderController@simpan')->name('slider.simpan');
+        Route::get('/edit/{id}','SliderController@edit')->name('slider.edit');
+        Route::post('/update','SliderController@update')->name('slider.update');
+        Route::get('/hapus/{id}','SliderController@hapus')->name('slider.hapus');
+    });
+
+    Route::post('wilayahSelect', 'WilayahController@jsonSelect')->name('wilayah.jsonSelect');
+
+    Route::prefix('user')->group(function() {
+        Route::get('/', 'UserController@index')->name('settings.user');
+        Route::post('/store','UserController@store')->name('settings.user.store');
+        Route::get('/edit/{id}','UserController@edit')->name('settings.user.edit');
+        Route::post('/update','UserController@update')->name('settings.user.update');
+        Route::get('/hapus/{id}','UserController@delete')->name('settings.user.delete');
+    });
 });
 

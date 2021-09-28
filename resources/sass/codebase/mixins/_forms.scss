@@ -2,6 +2,8 @@
 // Forms
 // --------------------------------------------------
 
+@use "sass:math";
+
 @mixin form-validation-state($state, $color, $icon) {
     .#{$state}-feedback {
         display: none;
@@ -63,7 +65,7 @@
         
             @if $enable-validation-icons {
                 padding-right: $custom-select-feedback-icon-padding-right;
-                background: $custom-select-background, $icon $custom-select-bg no-repeat $custom-select-feedback-icon-position / $custom-select-feedback-icon-size;
+                background: $custom-select-background, $icon $custom-select-bg no-repeat math.div($custom-select-feedback-icon-position, $custom-select-feedback-icon-size);
             }
         
             ~ .#{$state}-feedback,

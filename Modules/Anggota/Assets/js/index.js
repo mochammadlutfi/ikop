@@ -311,7 +311,7 @@ function load_content(){
             if(response.total === 0){
                 var navigasi = 'Menampilkan Data 0 - 0 Dari 0';
             }else{
-                var navigasi = 'Menampilkan Data '+ response.from +' - '+ response.to +' Dari '+ response.total;
+                var navigasi = response.from +' - '+ response.to +' / '+ response.total;
             }
             $('#content-nav span').html(navigasi);
             $('#data-list tbody tr#loading').addClass('d-none');

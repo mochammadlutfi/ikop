@@ -35,7 +35,7 @@
     justify-content: space-between;
     align-items: center;
     margin: 0 auto;
-    padding: (($header-height - 34px) / 2) $space-side;
+    padding: (($header-height - 34px) * 0.5) $space-side;
     height: $header-height;
 
     &.content-header-fullrow {

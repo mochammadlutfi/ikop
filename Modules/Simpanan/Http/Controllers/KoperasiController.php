@@ -57,7 +57,6 @@ class KoperasiController extends Controller
     {
         $rules = [
             'anggota_id' => 'required',
-            'kas_id' => 'required',
             'tgl' => 'required',
             'periode' => 'required',
         ];
@@ -187,7 +186,6 @@ class KoperasiController extends Controller
     {
         $rules = [
             'anggota_id' => 'required',
-            'kas_id' => 'required',
             'tgl' => 'required',
             'periode' => 'required',
         ];

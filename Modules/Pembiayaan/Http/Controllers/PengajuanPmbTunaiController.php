@@ -196,19 +196,17 @@ class PengajuanPmbTunaiController extends Controller
             $data = PmbTunai::where('id', $id)->first();
             $data->status = $status;
             $data->save();
-
-            if($status == 1){
-
+            if($status == "confirm"){
                 for($i = 1; $i <= $data->durasi; $i++){
                     $detail = new PmbTunaiDetail();
                     $detail->pmb_tunai_id = $data->id;
                     $detail->angsuran_ke = $i;
                     $detail->jumlah_pokok = $data->jumlah / $data->durasi;
-                    $detail->jumlah_bunga = $data->jumlah_bunga / $data->durasi;
-                    $detail->total = ($data->jumlah/2) + $data->jumlah_bunga / $data->durasi;
+                    $detail->jumlah_bunga = $data->jumlah_bunga;
+                    $detail->total = ($data->jumlah/$data->durasi) + $data->jumlah_bunga;
                     $detail->status = 0;
                     $detail->tgl_tempo = Date::parse($data->created_at)->addMonth($i)->day(10)->format('Y-m-d');
-                    $detail->save();
+                    $data->detail()->save($detail);
                 }
             }
 

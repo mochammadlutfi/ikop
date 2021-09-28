@@ -26,7 +26,7 @@ class PmbTunai extends Model
 
     public function detail()
     {
-        return $this->belongsTo('Modules\Pembiayaan\Entities\PmbTunaiDetail', 'pmb_tunai_id');
+        return $this->hasMany('Modules\Pembiayaan\Entities\PmbTunaiDetail', 'pmb_tunai_id');
     }
 
 }

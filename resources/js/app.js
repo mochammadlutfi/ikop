@@ -15,5 +15,5 @@ export default class App extends Template {
 // Once everything is loaded
 jQuery(() => {
     // Create a new instance of App
-   window.Codebase = new App();
+   window.Bumaba = new App();
 });

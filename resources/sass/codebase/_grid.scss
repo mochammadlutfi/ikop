@@ -4,13 +4,13 @@
 
 // Tiny grid gutters
 .row.gutters-tiny {
-    margin-right: (-($space-row-gutter-tiny / 2));
-    margin-left: (-($space-row-gutter-tiny / 2));
+    margin-right: (-($space-row-gutter-tiny * 0.5));
+    margin-left: (-($space-row-gutter-tiny * 0.5));
 
     > .col,
     > [class*="col-"] {
-        padding-left: ($space-row-gutter-tiny / 2);
-        padding-right: ($space-row-gutter-tiny / 2);
+        padding-left: ($space-row-gutter-tiny * 0.5);
+        padding-right: ($space-row-gutter-tiny * 0.5);
     }
 
     .push,
@@ -22,13 +22,13 @@
 // Responsive grid gutters
 @include media-breakpoint-down(sm) {
     .row:not(.gutters-tiny):not(.no-gutters) {
-        margin-right: (-($space-mobile / 2));
-        margin-left: (-($space-mobile / 2));
+        margin-right: (-($space-mobile * 0.5));
+        margin-left: (-($space-mobile * 0.5));
 
         > .col,
         > [class*="col-"] {
-            padding-left: ($space-mobile / 2);
-            padding-right: ($space-mobile / 2);
+            padding-left: ($space-mobile * 0.5);
+            padding-right: ($space-mobile * 0.5);
         }
     }
 }
