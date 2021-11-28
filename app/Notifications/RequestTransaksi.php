@@ -18,7 +18,7 @@ class RequestTransaksi extends Notification
      */
     public function __construct()
     {
-        //
+        return ['mail'];
     }
 
     /**

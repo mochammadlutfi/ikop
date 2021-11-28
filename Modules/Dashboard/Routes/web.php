@@ -13,4 +13,5 @@
 
 Route::prefix('dashboard')->group(function() {
     Route::get('/', 'DashboardController@index')->name('dashboard');
+    Route::get('/data', 'DashboardController@data')->name('dashboard.data');
 });

@@ -10,7 +10,12 @@ class Bank extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'nama', 'kode', 'no_rekening', 'atas_nama', 'icon'
+        'nama', 'kode', 'no_rekening', 'atas_nama', 'logo'
     ];
+
+    public function getLogoAttribute()
+    {
+        return asset($this->attributes['logo']);
+    }
 
 }

@@ -18,11 +18,6 @@ const mix = require('laravel-mix');
 mix
     /* CSS Backend*/
     .sass('resources/sass/main.scss', 'public/css/laravel.app.css')
-    .sass('resources/sass/codebase/themes/corporate.scss', 'public/css/themes/')
-    .sass('resources/sass/codebase/themes/earth.scss', 'public/css/themes/')
-    .sass('resources/sass/codebase/themes/elegance.scss', 'public/css/themes/')
-    .sass('resources/sass/codebase/themes/flat.scss', 'public/css/themes/')
-    .sass('resources/sass/codebase/themes/pulse.scss', 'public/css/themes/')
 
     /* JS Backend*/
     .js('node_modules/popper.js/dist/popper.js', 'public/js').sourceMaps()

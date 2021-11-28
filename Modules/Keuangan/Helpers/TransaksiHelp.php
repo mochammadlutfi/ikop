@@ -50,7 +50,6 @@ if(!function_exists('get_simla_nomor')){
 if(!function_exists('get_simkop_nomor')){
     function get_simkop_nomor(){
         $q = Transaksi::select(DB::raw('MAX(RIGHT(nomor,5)) AS kd_max'));
-        
         $kd_cabang = 1;
         $no = 1;
         date_default_timezone_set('Asia/Jakarta');

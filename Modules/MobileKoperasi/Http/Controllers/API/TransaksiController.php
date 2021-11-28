@@ -90,9 +90,6 @@ class TransaksiController extends Controller
         $data->total = (int)$data->total;
         $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
         $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
-        if($data->pembayaran->bank !== null){
-            $data->pembayaran->bank->logo = 'http://192.168.1.2/bumaba/public/'. $data->pembayaran->bank->logo;
-        }
         $data->item = json_decode($data->item);
 
         return response()->json([

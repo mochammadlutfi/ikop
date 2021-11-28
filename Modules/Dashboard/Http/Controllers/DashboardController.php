@@ -6,8 +6,10 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-use Modules\Keuangan\Entities\TransaksiKas;
-
+use Modules\Keuangan\Entities\TransaksiLine;
+use Modules\Keuangan\Entities\Transaksi;
+use Carbon\Carbon;
+use DB;
 class DashboardController extends Controller
 {
     public function __construct()
@@ -19,52 +21,81 @@ class DashboardController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $requsest)
     {
-
-        // $pemasukan = TransaksiKas::whereBetween('created_at', [$start, $now])->where('jenis', 'pemasukan')
-        //     ->groupBy('date')
-        //     ->orderBy('date')
-        //     ->get( [
-        //         DB::raw( 'DAY(created_at) as date' ),
-        //         DB::raw( 'COUNT(*) as "count"' )
-        //     ] )
-        //     ->pluck('count', 'date');
-        // $pengeluaran = TransaksiKas::whereBetween('created_at', [$start, $now])->where('jenis', 'pengeluaran')
-        //     ->groupBy('date')
-        //     ->orderBy('date')
-        //     ->get( [
-        //         DB::raw( 'DAY(created_at) as date' ),
-        //         DB::raw( 'COUNT(*) as "count"' )
-        //     ] )
-        //     ->pluck('count', 'date');
-        // for($i = 1; $i <= $days ; $i++)
-        // {
-        //     $tgl[] = $this->get_hari($start3->addDays()->format('Y-m-d')).' - '.$start->addDays()->format('d/m');
-        //     $dateString = ltrim($start2->addDays()->format('d'), "0");
-        //     if(isset($pemasukan[$dateString])) {
-        //         $masuk[] = $pemasukan[$dateString];
-        //     }else{
-        //         $masuk[] = 0;
-        //     }
-        //     if(isset($pengeluaran[$dateString])) {
-        //         $keluar[] = $pengeluaran[$dateString];
-        //     }else{
-        //         $keluar[] = 0;
-        //     }
-        // }
-
-        // $chart_masuk = new PemasukanKasChart;
-        // $chart_masuk->labels($tgl)->displayAxes('yAxes');
-        // $chart_masuk->dataset('Pemasukan Kas', 'line', $masuk)
-        // ->backgroundColor('rgba(66,165,245,.25)')
-        // ->color('rgba(66,165,245,1)')
-        // ->fill(TRUE);
-        // $chart_masuk->dataset('Pengeluaran Kas', 'line', $keluar)
-        // ->backgroundColor('rgba(156,204,101,.45)')
-        // ->color('rgba(156,204,101,1)')
-        // ->fill(TRUE);
-
         return view('dashboard::index');
     }
+
+    public function data(Request $request){
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        return response()->json([
+            'simpanan' => $this->hitungSimpanan($start_date, $end_date),
+            'kas' => $this->hitungKas($start_date, $end_date),
+            'chartTransaksi' => $this->chartTransaksi(),
+        ]);
+    }
+
+    private function hitungSimpanan($start, $end){
+        $simpananPemasukan = TransaksiLine::whereIn('akun_id', array(3, 4, 14,9))
+        ->whereBetween('created_at', [$start, $end])
+        ->where('jenis', 'pemasukan')->sum('jumlah');
+
+        
+        $simpananPengeluaran = TransaksiLine::whereIn('akun_id', array(3, 4, 14, 9))
+        ->whereBetween('created_at', [$start, $end])
+        ->where('jenis', 'pengeluaran')->sum('jumlah');
+
+        $simpananResult = collect([
+            'Pemasukan' => $simpananPemasukan,
+            'Pengeluaran' => $simpananPengeluaran,
+            'Total' => $simpananPemasukan - $simpananPengeluaran,
+        ]);
+        return $simpananResult;
+    }
+
+    private function hitungKas($start, $end)
+    {
+        $today = Carbon::now();
+
+        $simpananPemasukan = TransaksiLine::whereNotIn('akun_id', array(3, 4, 14,9))
+        ->whereBetween('tgl', [$start, $end])
+        ->where('jenis', 'pemasukan')->sum('jumlah');
+        
+        $simpananPengeluaran = TransaksiLine::whereNotIn('akun_id', array(3, 4, 14, 9))
+        ->whereBetween('tgl', [$start, $end])
+        ->where('jenis', 'pengeluaran')->sum('jumlah');
+
+        $simpananResult = collect([
+            'Pemasukan' => $simpananPemasukan,
+            'Pengeluaran' => $simpananPengeluaran,
+            'Total' => $simpananPemasukan - $simpananPengeluaran,
+        ]);
+
+        return $simpananResult;
+    }
+
+
+    private function chartTransaksi(){
+        $data = Transaksi::where('created_at', '>=', Carbon::now()->subMonth())
+        ->groupBy('date')
+        ->orderBy('date', 'DESC')
+        ->get(array(
+            DB::raw('Date(created_at) as date'),
+            DB::raw('COUNT(*) as "transaksi"')
+        ));
+        $label = array();
+        foreach($data as $d){
+            $label[] = $d->date;
+            $val[] = $d->transaksi;
+        }
+        $resp = Collect([
+            "label" => $label,
+            "data" => $val,
+        ]);
+
+        return $resp;
+    }
+
 }

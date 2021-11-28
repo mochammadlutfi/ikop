@@ -39,32 +39,6 @@ jQuery(function() {
         // },
     });
 
-    var kas = $("#field-kas_id").select2({
-        placeholder: 'Pilih Kas',
-        allowClear: true,
-        theme : 'bootstrap4',
-        ajax: {
-            url: laroute.route('kas.select2'),
-            type: 'POST',
-            dataType: 'JSON',
-            delay: 250,
-            data: function (params) {
-                return {
-                    searchTerm: params.term
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        }
-    }).on('select2:unselecting', function(e) {
-        $(this).val(null).trigger('change');
-        e.preventDefault();
-    });
-
     if($('#method').val() == 'update'){
         anggota_opt = new Option($('#field-anggota_id').data("text"), $('#field-anggota_id').data("id"), true, true);
         anggota.append(anggota_opt).trigger('change');
@@ -100,6 +74,21 @@ jQuery(function() {
                 alert('Error deleting data');
             }
         });
+
+        $.ajax({
+            url: laroute.route('setoran.wajib_paid', { id: id }),
+            type: "GET",
+            dataType: "JSON",
+            success: function(response) {
+                Swal.close();
+                form.find('#disabledDates').val(response.date);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                Swal.close();
+                alert('Error deleting data');
+            }
+        });
+        
     });
     
     $('#field-tgl').datetimepicker({
@@ -119,15 +108,45 @@ jQuery(function() {
         "locale": moment.locale('id'),
         "sideBySide": true,
         "viewMode": "months",
-        "disabledDates" : [
-            moment("08/10/2021"),
-            moment("07/0/2021"),
-        ],
         "widgetPositioning": {
             "horizontal": "auto",
             "vertical": "auto"
         },
-    });
+        "minDate" : new Date(2019, 12,1),
+        "useCurrent" : false,
+    }).on('dp.show', function (e) { 
+        var datesToDisable = $("#disabledDates").val().split(",");
+        var year = $("th.picker-switch").eq(1).text();
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $(".month").each(function(index, element) {
+            var el = $(element);
+        
+            var hideMonth = $.grep( datesToDisable, function( n, i ) {
+                return n.substr(0, 4) == year && months[parseInt(n.substr(5, 2)) - 1] == el.text();
+            });
+
+            if (hideMonth.length) {
+                el.addClass('disabled').removeClass('available');
+            }
+            else {
+                el.addClass('available').removeClass('disabled');
+            }
+          });
+     }).on('dp.update', function (e) { 
+        var datesToDisable = $("#disabledDates").val().split(",");
+        var year = $("th.picker-switch").eq(1).text();
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $(".month").each(function(index, element) {
+            var el = $(element);
+        
+            var hideMonth = $.grep( datesToDisable, function( n, i ) {
+                return n.substr(0, 4) == year && months[parseInt(n.substr(5, 2)) - 1] == el.text();
+            });
+        
+            if (hideMonth.length)
+                el.addClass('disabled');
+          });
+     });
 
     $("#form-setor").on("submit", function (e) {
         e.preventDefault();

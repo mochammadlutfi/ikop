@@ -91,8 +91,6 @@
 @stop
 
 @push('scripts')
-<script src="{{ asset('js/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
-<script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('js/plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
 <script src="{{ Module::asset('Simpanan:Assets/simla/riwayat.js') }}"></script>
 @endpush

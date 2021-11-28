@@ -10,16 +10,6 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./resources/sass/codebase/themes/pulse.scss":
-/*!***************************************************!*\
-  !*** ./resources/sass/codebase/themes/pulse.scss ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvcHVsc2Uuc2Nzcz83NmIyIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSIsImZpbGUiOiIuL3Jlc291cmNlcy9zYXNzL2NvZGViYXNlL3RoZW1lcy9wdWxzZS5zY3NzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gZXh0cmFjdGVkIGJ5IG1pbmktY3NzLWV4dHJhY3QtcGx1Z2luXG5leHBvcnQge307Il0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./resources/sass/codebase/themes/pulse.scss\n");
-
-/***/ }),
-
 /***/ "./resources/sass/main.scss":
 /*!**********************************!*\
   !*** ./resources/sass/main.scss ***!
@@ -27,46 +17,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9tYWluLnNjc3M/ZjczYyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEiLCJmaWxlIjoiLi9yZXNvdXJjZXMvc2Fzcy9tYWluLnNjc3MuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBleHRyYWN0ZWQgYnkgbWluaS1jc3MtZXh0cmFjdC1wbHVnaW5cbmV4cG9ydCB7fTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./resources/sass/main.scss\n");
-
-/***/ }),
-
-/***/ "./resources/sass/codebase/themes/corporate.scss":
-/*!*******************************************************!*\
-  !*** ./resources/sass/codebase/themes/corporate.scss ***!
-  \*******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvY29ycG9yYXRlLnNjc3M/MWExOSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEiLCJmaWxlIjoiLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvY29ycG9yYXRlLnNjc3MuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBleHRyYWN0ZWQgYnkgbWluaS1jc3MtZXh0cmFjdC1wbHVnaW5cbmV4cG9ydCB7fTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./resources/sass/codebase/themes/corporate.scss\n");
-
-/***/ }),
-
-/***/ "./resources/sass/codebase/themes/earth.scss":
-/*!***************************************************!*\
-  !*** ./resources/sass/codebase/themes/earth.scss ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvZWFydGguc2Nzcz9kOWVhIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSIsImZpbGUiOiIuL3Jlc291cmNlcy9zYXNzL2NvZGViYXNlL3RoZW1lcy9lYXJ0aC5zY3NzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gZXh0cmFjdGVkIGJ5IG1pbmktY3NzLWV4dHJhY3QtcGx1Z2luXG5leHBvcnQge307Il0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./resources/sass/codebase/themes/earth.scss\n");
-
-/***/ }),
-
-/***/ "./resources/sass/codebase/themes/elegance.scss":
-/*!******************************************************!*\
-  !*** ./resources/sass/codebase/themes/elegance.scss ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvZWxlZ2FuY2Uuc2Nzcz9jNGM0Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSIsImZpbGUiOiIuL3Jlc291cmNlcy9zYXNzL2NvZGViYXNlL3RoZW1lcy9lbGVnYW5jZS5zY3NzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gZXh0cmFjdGVkIGJ5IG1pbmktY3NzLWV4dHJhY3QtcGx1Z2luXG5leHBvcnQge307Il0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./resources/sass/codebase/themes/elegance.scss\n");
-
-/***/ }),
-
-/***/ "./resources/sass/codebase/themes/flat.scss":
-/*!**************************************************!*\
-  !*** ./resources/sass/codebase/themes/flat.scss ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvc2Fzcy9jb2RlYmFzZS90aGVtZXMvZmxhdC5zY3NzPzVhMjEiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBIiwiZmlsZSI6Ii4vcmVzb3VyY2VzL3Nhc3MvY29kZWJhc2UvdGhlbWVzL2ZsYXQuc2Nzcy5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8vIGV4dHJhY3RlZCBieSBtaW5pLWNzcy1leHRyYWN0LXBsdWdpblxuZXhwb3J0IHt9OyJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./resources/sass/codebase/themes/flat.scss\n");
 
 /***/ }),
 
@@ -190,12 +140,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"/js/popper": 0,
-/******/ 			"css/themes/flat": 0,
-/******/ 			"css/themes/elegance": 0,
-/******/ 			"css/themes/earth": 0,
-/******/ 			"css/themes/corporate": 0,
-/******/ 			"css/laravel.app": 0,
-/******/ 			"css/themes/pulse": 0
+/******/ 			"css/laravel.app": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -243,13 +188,8 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./node_modules/popper.js/dist/popper.js")))
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/main.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/codebase/themes/corporate.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/codebase/themes/earth.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/codebase/themes/elegance.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/codebase/themes/flat.scss")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/themes/flat","css/themes/elegance","css/themes/earth","css/themes/corporate","css/laravel.app","css/themes/pulse"], () => (__webpack_require__("./resources/sass/codebase/themes/pulse.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/laravel.app"], () => (__webpack_require__("./node_modules/popper.js/dist/popper.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/laravel.app"], () => (__webpack_require__("./resources/sass/main.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

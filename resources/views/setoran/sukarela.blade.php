@@ -31,6 +31,7 @@
             <div class="col-lg-12">
                 <div class="block">
                     <div class="block-content pb-15">
+                            <input type="hidden" name="type" value="{{ $type }}">
                             <input type="hidden" id="method" value="store">
                             <h2 class="content-heading pt-0">Informasi Anggota</h2>
                             <div class="row">

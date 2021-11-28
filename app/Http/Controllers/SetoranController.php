@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use Modules\Simpanan\Entities\SimkopTransaksi;
 
 
 class SetoranController extends Controller
@@ -27,7 +28,8 @@ class SetoranController extends Controller
      */
     public function sukarela(Request $request)
     {
-        return view('setoran.sukarela');
+        $type = 'isi saldo';
+        return view('setoran.sukarela', compact('type'));
     }
     
     public function sukarela_store(Request $request)
@@ -36,7 +38,6 @@ class SetoranController extends Controller
             'anggota_id' => 'required',
             'jumlah' => 'required',
             'tgl' => 'required',
-            'type' => 'required',
         ];
 
         $pesan = [
@@ -44,7 +45,6 @@ class SetoranController extends Controller
             'kas_id.required' => 'Kas Wajib Diisi!',
             'jumlah.required' => 'Jumlah Simpanan Wajib Diisi!',
             'tgl.required' => 'Tanggal Transaksi Wajib Diisi!',
-            'type.required' => 'Jenis Transaksi Wajib Diisi!',
         ];
 
         $validator = Validator::make($request->all(), $rules, $pesan);
@@ -71,7 +71,7 @@ class SetoranController extends Controller
                 $transaksi->anggota_id = $request->anggota_id;
                 $transaksi->service = 'simpanan';
                 $transaksi->sub_service = 'sukarela';
-                $transaksi->jenis = $request->type === 'isi saldo' ? 'setoran sukarela' : 'penarikan sukarela';
+                $transaksi->jenis = 'setoran sukarela';
                 $transaksi->teller_id   = auth()->guard('admin')->user()->id;
                 $transaksi->keterangan = $request->keterangan;
                 $transaksi->total = $request->jumlah;
@@ -92,14 +92,13 @@ class SetoranController extends Controller
                 $payment->method = 'Tunai';
                 $payment->jumlah = $request->jumlah;
                 $payment->status = 'confirm';
+                $payment->tgl_bayar = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->pembayaran()->save($payment);
-
 
                 $simla = new SimlaTransaksi();
                 $simla->anggota_id = $request->anggota_id;
                 $simla->type = $request->type;
                 $simla->jumlah = $request->jumlah;
-                // $simla->tgl = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->simla()->save($simla);
 
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
@@ -163,7 +162,7 @@ class SetoranController extends Controller
             return response()->json([
                 'fail' => true,
                 'errors' => $validator->errors()
-            ]);
+            ], 403);
         }else{
             $pay_check = SimkopTransaksi::where('anggota_id', $request->anggota_id)
             ->whereMonth('periode', Date::createFromFormat('d F Y', '1 '.$request->periode)->format('m'))
@@ -174,8 +173,8 @@ class SetoranController extends Controller
             {
                 return response()->json([
                     'fail' => true,
-                    'errors' => $validator->errors()
-                ]);
+                    'message' => $validator->errors()
+                ], 403);
             }
 
             $item = collect([
@@ -221,6 +220,7 @@ class SetoranController extends Controller
                 $payment->method = 'Tunai';
                 $payment->jumlah = !empty($request->jml_sosial) ? 150000 : 100000;
                 $payment->status = 'confirm';
+                $payment->tgl_bayar = Carbon::parse($request->tgl)->format('Y-m-d H:i:s');
                 $transaksi->pembayaran()->save($payment);
 
                 $wallet = Wallet::where('anggota_id', $request->anggota_id)->first();
@@ -251,5 +251,13 @@ class SetoranController extends Controller
         }
     }
 
+    public function wajib_paid($id){
+        $data = SimkopTransaksi::where('anggota_id', $id)
+        ->whereYear('periode', '>', '2020')->pluck('periode');
+        return response()->json([
+            'fail' => false,
+            'date' => $data,
+        ]);
+    }
 
 }

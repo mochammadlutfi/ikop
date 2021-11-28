@@ -34,17 +34,17 @@ class SukarelaController extends Controller
     public function saldo(Request $request)
     {
         $anggota_id = $request->user()->anggota_id;
-
-        $saldo = SimlaTransaksi::
-        leftJoin('transaksi as a', 'a.id', '=', 'simla_transaksi.transaksi_id')
-        ->leftJoin('transaksi_bayar as b', 'b.transaksi_id', '=', 'simla_transaksi.transaksi_id')
-        ->where('a.status', 1)
-        ->where('b.status', "confirm")
-        ->where('a.anggota_id', $anggota_id)
-        ->sum('simla_transaksi.jumlah');
+        $wallet = Wallet::where('anggota_id', $anggota_id)->first();
+        // $saldo = SimlaTransaksi::
+        // leftJoin('transaksi as a', 'a.id', '=', 'simla_transaksi.transaksi_id')
+        // // ->leftJoin('transaksi_bayar as b', 'b.transaksi_id', '=', 'simla_transaksi.transaksi_id')
+        // ->where('a.status', '1')
+        // // ->where('b.status', "confirm")
+        // ->where('a.anggota_id', $anggota_id)
+        // ->sum('simla_transaksi.jumlah');
         
         return response()->json([
-            'data' =>(int)$saldo,
+            'data' =>(int)$wallet->sukarela,
             'fail' => false,
         ], 200);
     }
@@ -147,17 +147,27 @@ class SukarelaController extends Controller
                 $simla->type = 'transfer';
                 $simla->jumlah = -$request->jumlah;
                 $transaksi->simla()->save($simla);
+                
+                $wallet = Wallet::where('anggota_id', $anggota_id)->first();
+                $wallet->sukarela = $wallet->sukarela - $request->jumlah;
+                $wallet->save();
 
                 $tujuan = Anggota::where('anggota_id', $request->anggota_id)->first();
                 $tujuan->nama;
+
                 $fcm_token = $user->device_id;
                 
                 $data = [
                     'title'       => 'Transfer Berhasil',
                     'description' => "Transfer Ke ".$tujuan->nama ." Berhasil",
-                    'order_id'    => $transaksi->id,
+                    'transaksi_id'    => $transaksi->id,
                     'image'       => '',
                 ];
+                
+                $walletRecieve = Wallet::where('anggota_id', $request->anggota_id)->first();
+                $walletRecieve->sukarela = $walletRecieve->sukarela + $request->jumlah;
+                $walletRecieve->save();
+
                 Notification::send_push_notif_to_device($fcm_token, $data);
 
             }catch(\QueryException $e){

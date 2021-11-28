@@ -64,18 +64,18 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>No. Transaksi</label>
-                                <input type="text" class="form-control" name="kd_transaksi" value="{{ get_simkop_nomor() }}" readonly>
+                                <input type="text" class="form-control" name="kd_transaksi" value="{{ get_simkop_nomor() }}">
                             </div>
                             <div class="form-group">
                                 <label>Tanggal Transaksi</label>
-                                <input type="text" id="field-tgl" class="form-control" name="tgl" >
+                                <input type="text" id="field-tgl" class="form-control" name="tgl" autocomplete="off">
                                 <span id="error-tgl" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Periode Bulan</label>
-                                <input type="text" id="field-periode" class="form-control" name="periode">
+                                <input type="text" id="field-periode" class="form-control" name="periode" autocomplete="off">
                                 <span id="error-periode" class="invalid-feedback"></span>
                             </div>
                             <div class="form-group">
@@ -85,6 +85,7 @@
                         </div>
                     </div>
                     <div class="row">
+                        <input type="hidden" id="disabledDates" value="">
                         <div class="col-lg-12">
                             <table class="table table-bordered" width="100%">
                                 <thead>

@@ -11,7 +11,7 @@
 <div class="content">
     <div class="content-heading pt-0 mb-3">
         Kelola Anggota
-        <a href="{{ route('anggota.tambah') }}" class="btn btn-secondary mr-5 mb-5 float-right btn-rounded">
+        <a href="{{ route('anggota.tambah') }}" class="btn btn-secondary mr-5 mb-5 float-right btn-sm">
             <i class="si si-plus mr-5"></i>
             Tambah Anggota Baru
         </a>

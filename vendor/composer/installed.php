@@ -6,11 +6,20 @@
     'aliases' => 
     array (
     ),
-    'reference' => '3fdbf0dbeb9aeb305f88968c27445d4c1fea2097',
+    'reference' => '160b483d83464fd6b79ac42cfa2f57275d80745d',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
   array (
+    'arrilot/laravel-widgets' => 
+    array (
+      'pretty_version' => '3.13.1',
+      'version' => '3.13.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'ae0e44ce625026ae71c6ab9259f89f13af227e37',
+    ),
     'asm89/stack-cors' => 
     array (
       'pretty_version' => 'v2.0.3',
@@ -625,7 +634,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '3fdbf0dbeb9aeb305f88968c27445d4c1fea2097',
+      'reference' => '160b483d83464fd6b79ac42cfa2f57275d80745d',
     ),
     'laravel/passport' => 
     array (
@@ -1141,8 +1150,8 @@
     array (
       'provided' => 
       array (
-        0 => '1.0|2.0',
-        1 => '1.0.0 || 2.0.0 || 3.0.0',
+        0 => '1.0.0 || 2.0.0 || 3.0.0',
+        1 => '1.0|2.0',
       ),
     ),
     'psr/simple-cache' => 

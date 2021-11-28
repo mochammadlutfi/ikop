@@ -1493,6 +1493,27 @@ a.block.block-link-shadow:active {
   border-color: #2facb2;
 }
 
+.cke_chrome,
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+.ck.ck-toolbar {
+  border-color: #e6ecec !important;
+}
+
+.cke_top,
+.ck.ck-toolbar {
+  border-bottom-color: #e6ecec !important;
+  background: #f8f9f9 !important;
+}
+
+.ck.ck-toolbar .ck.ck-toolbar__separator {
+  background: #e6ecec !important;
+}
+
+.cke_bottom {
+  border-top-color: #e6ecec !important;
+  background: #f8f9f9 !important;
+}
+
 .dropzone {
   background-color: #f8f9f9;
   border-color: #d8e1e1;
@@ -1507,62 +1528,12 @@ a.block.block-link-shadow:active {
   color: #2facb2;
 }
 
-.fc-event {
-  color: #171717;
+.fc-theme-bootstrap .fc-h-event {
+  background-color: #2facb2;
+  border: #2facb2;
 }
-.fc-event:hover {
-  color: #575757;
-}
-
-.fc-state-default {
-  color: #171717;
-  background-color: #f2f5f5;
-  border-color: #d8e1e1;
-}
-
-.fc-state-hover,
-.fc-state-down,
-.fc-state-active,
-.fc-state-disabled {
-  background-color: #cfdada;
-  border-color: #b3c4c4;
-}
-
-.fc-state-hover {
-  color: #171717;
-}
-
-.fc-state-down,
-.fc-state-active {
-  background-color: #cfdada;
-  border-color: #b3c4c4;
-}
-
-.fc thead th.fc-widget-header {
+.fc-theme-bootstrap .fc-col-header-cell {
   background-color: #f8f9f9;
-}
-
-.fc-unthemed .fc-content,
-.fc-unthemed .fc-divider,
-.fc-unthemed .fc-list-heading td,
-.fc-unthemed .fc-list-view,
-.fc-unthemed .fc-popover,
-.fc-unthemed .fc-row,
-.fc-unthemed tbody,
-.fc-unthemed td,
-.fc-unthemed th,
-.fc-unthemed thead {
-  border-color: #e6ecec;
-}
-
-.fc-unthemed .fc-divider,
-.fc-unthemed .fc-list-heading td,
-.fc-unthemed .fc-popover .fc-header {
-  background: #f2f5f5;
-}
-
-.fc-unthemed .fc-today {
-  background: #f8f9f9;
 }
 
 .irs-line {
@@ -1668,10 +1639,7 @@ div.tagsinput span.tag {
 }
 
 .simplebar-scrollbar::before {
-  background: #252d38;
-}
-.sidebar-inverse #sidebar .simplebar-scrollbar::before {
-  background: #d3f2f3;
+  background: rgba(17, 20, 25, 0.5);
 }
 
 .slick-slider .slick-prev::before,

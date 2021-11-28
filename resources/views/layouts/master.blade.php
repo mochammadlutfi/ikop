@@ -60,6 +60,8 @@
         </div>
         <script src="{{ asset('js/laravel.app.js') }}"></script>
         <script src="{{ asset('js/laroute.js') }}"></script>
+        <script src="{{ asset('js/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
+        <script src="{{ asset('js/plugins/moment/moment-with-locales.min.js') }}"></script>
         <script src="{{ asset('js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
         <script src="{{ asset('js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
         <script src="{{ asset('js/functions.js') }}"></script>

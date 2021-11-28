@@ -2,6 +2,9 @@
 use App\Http\Controllers;
 use Spatie\Permission\Models\Role;
 use Twilio\Rest\Client;
+use App\Notifications\RequestTransaksi;
+
+use App\Models\Anggota;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +15,12 @@ use Twilio\Rest\Client;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+// Route::prefix('dashboard')->group(function() {
+//     Route::get('/', 'DashboardController@index')->name('dashboard');
+// });
+
+
 Route::get('/fix', function () {
     Artisan::call('key:generate');
     Artisan::call('cache:clear');
@@ -71,6 +80,7 @@ Route::group(['prefix' => 'setoran'], function () {
 
     Route::get('/sukarela', 'SetoranController@sukarela')->name('setoran.sukarela');
     Route::get('/wajib', 'SetoranController@wajib')->name('setoran.wajib');
+    Route::get('/wajib-paid/{id}', 'SetoranController@wajib_paid')->name('setoran.wajib_paid');
     // Route::post('/store', 'KoperasiController@store')->name('simkop.store');
 
     // Route::get('/edit/{id}', 'KoperasiController@edit')->name('simkop.edit');
@@ -82,6 +92,14 @@ Route::group(['prefix' => 'setoran'], function () {
     
     // Route::get('/tunggakan', 'KoperasiController@tunggakan')->name('simkop.tunggakan');
     // Route::get('/tunggakan/detail/{id}', 'KoperasiController@tunggakan_detail')->name('simkop.tunggakan.detail');
+});
+
+Route::group(['prefix' => 'transaksi'], function () {
+    Route::get('/', 'TransaksiController@aktif');
+    Route::get('/aktif', 'TransaksiController@aktif')->name('transaksi.aktif');
+    Route::get('/selesai', 'TransaksiController@selesai')->name('transaksi.selesai');
+    Route::get('/detail/{id}', 'TransaksiController@detail')->name('transaksi.detail');
+    Route::get('/count', 'TransaksiController@countAktif')->name('transaksi.countAktif');
 });
 
 
@@ -121,3 +139,9 @@ Route::group(['prefix' => 'settings', 'namespace' => 'Settings'], function () {
     });
 });
 
+
+Route::get('/email', function () {
+    $user = Anggota::first();
+    $user->notify(new RequestTransaksi("A new user has visited on your application."));
+       return view('email.example');
+});

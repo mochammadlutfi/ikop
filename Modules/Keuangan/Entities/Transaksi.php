@@ -55,17 +55,16 @@ class Transaksi extends Model
     public function getJenisTransaksiAttribute($value)
     {
         if($this->jenis == 'setoran wajib'){
-            return 'Setoran';
+            return 'Setoran Simpanan Wajib';
         }elseif($this->jenis == 'penarikan sukarela'){
-            return 'Penarikan';
+            return 'Penarikan Simpanan Sukarela';
         }elseif($this->jenis == 'pendaftaran'){
             return 'Pendaftaran';
         }else if($this->jenis == 'setoran sukarela'){
-            return 'Isi Saldo';
+            return 'Isi Saldo Simpanan Sukarela';
         }else if($this->jenis == 'transfer sukarela'){
             return 'Transfer';
         }else if($this->jenis == 'pembelian'){
-            // return 'Pembelian '.ucwords($this->service);
             if($this->sub_service == 'pulsa'){
                 return 'Pembelian Pulsa';
             }elseif($this->sub_service == 'data'){

@@ -3,7 +3,7 @@
 namespace Modules\MobileKoperasi\Http\Controllers\API;
 
 use Modules\Anggota\Entities\Anggota;
-use Modules\Slider\Entities\Slider;
+use App\Models\Slider;
 use Modules\Simpanan\Entities\SimkopTransaksi;
 
 
@@ -27,7 +27,7 @@ class SliderController extends Controller
         $response = Slider::where('is_active', 1)->get();
         
         $response->each(function ($data) {
-            $data->img_url = 'http://192.168.1.3/bumaba/public/'.$data->img;
+            $data->img_url = 'http://192.168.1.2/bumaba/public/'.$data->img;
         });
 
         return response()->json([

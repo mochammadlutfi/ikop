@@ -17,8 +17,6 @@ jQuery('input.input-currency').each((index, element) => {
 
 
 jQuery('.currency').each((index, element) => {
-    // let el = $(element);
-
     new AutoNumeric(element, {
         allowDecimalPadding: false,
         alwaysAllowDecimalCharacter: true,
@@ -30,4 +28,22 @@ jQuery('.currency').each((index, element) => {
         unformatOnSubmit: true
     });
 });
+
+jQuery(function() { 
+    transaksiCount();
+});
+
+function transaksiCount(){
+    $.ajax({
+        url: laroute.route('transaksi.countAktif'),
+        type: "GET",
+        dataType: "JSON",
+        success: function(response) {
+            jQuery('.transaksi-notif-count').html(response);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            return;
+        }
+    });
+}
 

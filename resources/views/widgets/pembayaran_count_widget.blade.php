@@ -1,0 +1,1 @@
+<span class="badge badge-pill badge-primary ml-5 float-right">{{ $data }}</span>

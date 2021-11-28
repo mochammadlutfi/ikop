@@ -29,7 +29,7 @@ class Slider extends Model
     public function getImgUrlAttribute()
     {
         if (file_exists( public_path() . '/' . $this->attributes['img']) && $this->attributes['img'] !== null) {
-            return asset('public/'.$this->attributes['img']);
+            return asset($this->attributes['img']);
         } else {
             return asset('public/img/poster.png');
         }

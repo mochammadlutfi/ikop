@@ -12,7 +12,7 @@
 */
 
 Route::group(['prefix' => 'anggota'], function () {
-    Route::redirect('/', 'list');
+    Route::get('/', 'AnggotaController@index');
     Route::get('/list', 'AnggotaController@index')->name('anggota');
     Route::get('/coba', 'AnggotaController@coba')->name('coba');
     

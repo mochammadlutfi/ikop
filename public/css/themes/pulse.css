@@ -1493,6 +1493,27 @@ a.block.block-link-shadow:active {
   border-color: #e74c3c;
 }
 
+.cke_chrome,
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+.ck.ck-toolbar {
+  border-color: #e8e8e8 !important;
+}
+
+.cke_top,
+.ck.ck-toolbar {
+  border-bottom-color: #e8e8e8 !important;
+  background: #f7f7f7 !important;
+}
+
+.ck.ck-toolbar .ck.ck-toolbar__separator {
+  background: #e8e8e8 !important;
+}
+
+.cke_bottom {
+  border-top-color: #e8e8e8 !important;
+  background: #f7f7f7 !important;
+}
+
 .dropzone {
   background-color: #f7f7f7;
   border-color: #dbdbdb;
@@ -1507,62 +1528,12 @@ a.block.block-link-shadow:active {
   color: #e74c3c;
 }
 
-.fc-event {
-  color: #171717;
+.fc-theme-bootstrap .fc-h-event {
+  background-color: #e74c3c;
+  border: #e74c3c;
 }
-.fc-event:hover {
-  color: #575757;
-}
-
-.fc-state-default {
-  color: #171717;
-  background-color: #f2f2f2;
-  border-color: #dbdbdb;
-}
-
-.fc-state-hover,
-.fc-state-down,
-.fc-state-active,
-.fc-state-disabled {
-  background-color: lightgray;
-  border-color: #bababa;
-}
-
-.fc-state-hover {
-  color: #171717;
-}
-
-.fc-state-down,
-.fc-state-active {
-  background-color: lightgray;
-  border-color: #bababa;
-}
-
-.fc thead th.fc-widget-header {
+.fc-theme-bootstrap .fc-col-header-cell {
   background-color: #f7f7f7;
-}
-
-.fc-unthemed .fc-content,
-.fc-unthemed .fc-divider,
-.fc-unthemed .fc-list-heading td,
-.fc-unthemed .fc-list-view,
-.fc-unthemed .fc-popover,
-.fc-unthemed .fc-row,
-.fc-unthemed tbody,
-.fc-unthemed td,
-.fc-unthemed th,
-.fc-unthemed thead {
-  border-color: #e8e8e8;
-}
-
-.fc-unthemed .fc-divider,
-.fc-unthemed .fc-list-heading td,
-.fc-unthemed .fc-popover .fc-header {
-  background: #f2f2f2;
-}
-
-.fc-unthemed .fc-today {
-  background: #f7f7f7;
 }
 
 .irs-line {
@@ -1668,10 +1639,7 @@ div.tagsinput span.tag {
 }
 
 .simplebar-scrollbar::before {
-  background: #232323;
-}
-.sidebar-inverse #sidebar .simplebar-scrollbar::before {
-  background: #f3a8a0;
+  background: rgba(10, 10, 10, 0.5);
 }
 
 .slick-slider .slick-prev::before,

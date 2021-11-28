@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Modules\Simpanan\Entities\SimkopTransaksi;
 use Jenssegers\Date\Date;
 class Anggota extends Model
 {
+    use Notifiable;
     protected $table = 'anggota';
     protected $primaryKey = 'anggota_id';
     /**

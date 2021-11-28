@@ -48,10 +48,6 @@ class AnggotaController extends Controller
                 $q->where('anggota_id', 'like', '%' . $keyword . '%')
                   ->orWhere('nama', 'like', '%' . $keyword . '%');
             })
-            // ->whereHas('alamat', function ($query) {
-            //     return $query->where('domisili', '1');
-            // })
-            // ->where('nama', 'like', '%' . $request->keyword . '%')
             ->orderBy('anggota_id', 'DESC')->paginate(20);
 
             return response()->json($data);
@@ -229,38 +225,67 @@ class AnggotaController extends Controller
         DB::beginTransaction();
 
             try{
-                $anggota_id = 120010036;
-                
-                $data = Transaksi::with('transaksi_kas')->where(function($q){
-                    $q->where('jenis', 'pendaftaran')
-                      ->orWhere('jenis', 'setoran wajib')
-                      ->orWhere('jenis', 'setoran sukarela')
-                      ->orWhere('jenis', 'penarikan sukarela');
-                })->where('anggota_id', $anggota_id)->orderBy('tgl_transaksi', 'ASC')->get();
+                $anggota = Anggota::orderBy('anggota_id', 'ASC')->get();
+                foreach($anggota as $a){
+                    // 
+                    $sosial = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah', 'transaksi.status')
+                    ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+                    ->with(['pembayaran' => function($q){
+                        $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+                    }])
+                    ->where('transaksi.status', 1)
+                    ->where('transaksi.anggota_id', $a->anggota_id)
+                    ->where('a.akun_id', 9)
+                    ->sum("a.jumlah");
 
-                $wallet = Wallet::where('anggota_id', $anggota_id)->first();
-                foreach($data as $a){
-                    foreach($a->transaksi_kas as $k)
-                    {
-                        if($k->keterangan == 'Simpanan Wajib')
-                        {
-                            $wallet->increment('wajib', $k->jumlah);
-                        }else if($k->keterangan == 'Simpanan Sosial')
-                        {
-                            $wallet->increment('sosial', $k->jumlah);
-                        }else if($k->keterangan == 'Simpanan Sukarela')
-                        {
-                            if($k->jenis == 'pemasukan'){
-                                $wallet->increment('sukarela', $k->jumlah);
-                            }else{
-                                $wallet->decrement('sukarela', $k->jumlah);
-                            }
-                        }else if($k->keterangan == 'Simpanan Pokok')
-                        {
-                            $wallet->increment('pokok', $k->jumlah);
-                        }
-                    }
+                    
+                    $wajib = Transaksi::select('transaksi.id', 'transaksi.jenis', 'transaksi.service', 'transaksi.tgl', 'transaksi.total', 'a.jumlah', 'transaksi.status')
+                    ->join('transaksi_kas as a', 'a.transaksi_id', '=', 'transaksi.id')
+                    ->with(['pembayaran' => function($q){
+                        $q->select(['method', 'transaksi_id', 'status', 'jumlah']);
+                    }])
+                    ->where('transaksi.status', 1)
+                    ->where('transaksi.anggota_id', $a->anggota_id)
+                    ->where('a.akun_id', 9)
+                    ->sum("a.jumlah");
+
+                    // dd($wajib);
+
+                    $wallet = Wallet::where('anggota_id', $a->anggota_id)->first();
+                    $wallet->sosial = $sosial;
+                    $wallet->save();
                 }
+                
+                // $data = Transaksi::with('transaksi_kas')->where(function($q){
+                //     $q->where('jenis', 'pendaftaran')
+                //       ->orWhere('jenis', 'setoran wajib')
+                //       ->orWhere('jenis', 'setoran sukarela')
+                //       ->orWhere('jenis', 'penarikan sukarela');
+                // })->where('anggota_id', $anggota_id)->orderBy('tgl', 'ASC')->get();
+                // $wallet = Wallet::where('anggota_id', $anggota_id)->first();
+
+                // foreach($data as $a){
+                //     foreach($a->transaksi_kas as $k)
+                //     {
+                //         if($k->keterangan == 'Simpanan Wajib')
+                //         {
+                //             $wallet->increment('wajib', $k->jumlah);
+                //         }else if($k->keterangan == 'Simpanan Sosial')
+                //         {
+                //             $wallet->increment('sosial', $k->jumlah);
+                //         }else if($k->keterangan == 'Simpanan Sukarela')
+                //         {
+                //             if($k->jenis == 'pemasukan'){
+                //                 $wallet->increment('sukarela', $k->jumlah);
+                //             }else{
+                //                 $wallet->decrement('sukarela', $k->jumlah);
+                //             }
+                //         }else if($k->keterangan == 'Simpanan Pokok')
+                //         {
+                //             $wallet->increment('pokok', $k->jumlah);
+                //         }
+                //     }
+                // }
             
             }catch(\QueryException $e){
                 DB::rollback();
@@ -270,11 +295,6 @@ class AnggotaController extends Controller
                     'pesan' => 'Error Menyimpan Data Alamat',
                 ]);
             }
-
-        // $wallet = Wallet::where('anggota_id', '120010001')->first();
-        // $wallet->increment('wajib', 100000);
-        // $wallet->increment('sosial', 5000);
-
         DB::commit();
         dd('beres');
 

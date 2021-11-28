@@ -104,8 +104,6 @@ jQuery(function() {
         });
     });
 
-    
-
     $('#field-tgl').datetimepicker({
         "format": "DD-MM-YYYY",
         "dayViewHeaderFormat": "MMMM YYYY",

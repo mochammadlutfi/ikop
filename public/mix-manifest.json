@@ -2,10 +2,5 @@
     "/js/popper.js": "/js/popper.js",
     "/js/laravel.app.js": "/js/laravel.app.js",
     "/js/codebase.app.js": "/js/codebase.app.js",
-    "/css/themes/flat.css": "/css/themes/flat.css",
-    "/css/themes/elegance.css": "/css/themes/elegance.css",
-    "/css/themes/earth.css": "/css/themes/earth.css",
-    "/css/themes/corporate.css": "/css/themes/corporate.css",
-    "/css/laravel.app.css": "/css/laravel.app.css",
-    "/css/themes/pulse.css": "/css/themes/pulse.css"
+    "/css/laravel.app.css": "/css/laravel.app.css"
 }

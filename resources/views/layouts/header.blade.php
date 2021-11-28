@@ -17,7 +17,7 @@
         <div class="content-header-section" id="app">
 
             <!-- Notifications -->
-            {{-- @include('admin.layouts.notif') --}}
+            @include('layouts.notification')
             <!-- END Notifications -->
 
             <!-- User Dropdown -->
@@ -43,29 +43,6 @@
                         </a>
                     </div>
                 </div>
-            @endif
-
-            @if(Auth::guard('web')->check())
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-rounded btn-dual-secondary" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-user d-sm-none"></i>
-                    <span class="d-none d-sm-inline-block">{{ auth()->guard('web')->user()->anggota->nama }} </span>
-                    <i class="fa fa-angle-down ml-5"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right min-width-200" aria-labelledby="page-header-user-dropdown">
-                    <a class="dropdown-item" href="#">
-                        <i class="si si-wrench mr-5"></i> Pengaturan
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="si si-logout mr-5"></i> Keluar
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                    </a>
-                </div>
-            </div>
             @endif
             <!-- END User Dropdown -->
         </div>
