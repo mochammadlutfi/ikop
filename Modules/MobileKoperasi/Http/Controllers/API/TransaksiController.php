@@ -42,13 +42,15 @@ class TransaksiController extends Controller
             ->orderBy('transaksi.tgl', 'DESC')
             ->paginate(15);
         }else{
-            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl', 'transaksi.status')
+            $response = Transaksi::select('transaksi.id', 'transaksi.total', 'transaksi.service', 'transaksi.sub_service', 'transaksi.jenis', 'transaksi.tgl', 'transaksi.status', 'a.tujuan')
             ->with(['pembayaran' => function($q){
                 $q->select(['method', 'transaksi_id', 'code', 'admin_fee', 'bank_id', 'status', 'jumlah']);
                 $q->with(['bank:id,logo']);
             }])
+            ->join('simla_transaksi as a', 'a.transaksi_id', '=', 'transaksi.id')
             ->where('transaksi.status', 1)
             ->where('transaksi.anggota_id', $anggota_id)
+            ->orWhere('a.tujuan', $anggota_id)
             ->orderBy('transaksi.tgl', 'DESC')
             ->paginate(15);
         }
@@ -56,7 +58,7 @@ class TransaksiController extends Controller
         $response->each(function ($data) {
             $data->pembayaran->admin_fee = (int)$data->pembayaran->admin_fee;
             $data->pembayaran->jumlah = (int)$data->pembayaran->jumlah;
-            $data->total = $data->jenis == 'transfer sukarela' ? (int)-$data->total : (int)$data->total;
+            $data->total = $data->jenis == 'transfer sukarela' && $data->tujuan == null ? (int)-$data->total : (int)$data->total;
             $data->tgl = Date::parse($data->tgl)->format('d F Y');
             if($data->pembayaran->method == 'Simpanan Sukarela' && $data->status == 0){
                 $data->pembayaran->status = 'Diproses';

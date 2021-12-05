@@ -44,7 +44,7 @@
                                 <div class="form-group row">
                                     <div class="col-lg-12">
                                         <label>No. Transaksi</label>
-                                        <input type="text" class="form-control" name="no_invoice" value="{{ generate_transaksi_kd() }}">
+                                        <input type="text" class="form-control" name="no_invoice" value="">
                                     </div>
                                 </div>
                             </div>

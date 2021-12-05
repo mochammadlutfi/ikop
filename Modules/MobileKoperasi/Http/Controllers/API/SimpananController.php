@@ -32,11 +32,6 @@ class SimpananController extends Controller
         $wallet = Wallet::where('anggota_id', $anggota_id)->first();
         $simpanan = collect([
             [
-                'program' => 'Simpanan Pokok',
-                'saldo' => currency($wallet->pokok),
-                'slug' => 'pokok',
-            ],
-            [
                 'program' => 'Simpanan Wajib',
                 'saldo' => currency($wallet->wajib),
                 'slug' => 'wajib',
